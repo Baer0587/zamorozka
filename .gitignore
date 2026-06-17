@@ -1,3 +1,21 @@
 node_modules/
 temporary_screenshots/
 package-lock.json
+
+# Claude Code internals
+.claude/
+.clude/
+
+# Playwright logs
+.playwright-mcp/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Dev utilities
+screenshot.mjs
+serve.mjs
+
+# Private docs
+assets/tz.txt
