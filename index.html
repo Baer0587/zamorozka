@@ -1,0 +1,2324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ЗаморозЪка — домашние полуфабрикаты ручной лепки с доставкой по Санкт-Петербургу. Пельмени, вареники, блины и оладьи. Горячими или замороженными.">
+  <title>ЗаморозЪка — Домашние полуфабрикаты ручной лепки | Санкт-Петербург</title>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Leaflet.js -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- Google Fonts: Amatic SC (display) + Cabin (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Amatic SC"', 'cursive'],
+            body:    ['Cabin', 'sans-serif'],
+          },
+          colors: {
+            cream: {
+              50:  '#FEFCF8',
+              100: '#FAF7F0',
+              200: '#F5EDD8',
+              300: '#EDE0C4',
+              400: '#D4B896',
+            },
+            terra: {
+              300: '#E8845C',
+              400: '#E07044',
+              500: '#C85E32',
+              600: '#A84D28',
+              700: '#8B3D1E',
+            },
+            bark: {
+              100: '#D4B896',
+              200: '#BA9A82',
+              300: '#9A7A62',
+              400: '#7A5A42',
+              500: '#5C3D28',
+              600: '#3D2B1F',
+            },
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Cabin', sans-serif;
+      background-color: #FAF7F0;
+      color: #3D2B1F;
+      overflow-x: hidden;
+    }
+
+    /* ── Reduced motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+
+    /* ── Scroll-reveal ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible  { opacity: 1; transform: translateY(0); }
+    .delay-1 { transition-delay: 0.10s; }
+    .delay-2 { transition-delay: 0.20s; }
+    .delay-3 { transition-delay: 0.30s; }
+    .delay-4 { transition-delay: 0.40s; }
+
+    /* ── Header ── */
+    #site-header {
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    #site-header.scrolled {
+      background-color: rgba(250, 247, 240, 0.97);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 24px rgba(61,43,31,0.10);
+    }
+
+    /* ── Nav underline ── */
+    .nav-link { position: relative; padding-bottom: 2px; }
+    .nav-link::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 0; height: 2px;
+      background: #C85E32;
+      transition: width 0.25s ease;
+    }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── Shadows ── */
+    .shadow-warm    { box-shadow: 0 4px 16px rgba(200,94,50,.12), 0 1px 4px rgba(61,43,31,.07); }
+    .shadow-warm-md { box-shadow: 0 8px 32px rgba(200,94,50,.16), 0 2px 8px rgba(61,43,31,.09); }
+    .shadow-warm-lg { box-shadow: 0 12px 48px rgba(200,94,50,.22), 0 4px 16px rgba(61,43,31,.12); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: #C85E32;
+      color: #FEFCF8;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-primary:hover  { background: #A84D28; }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:focus-visible { outline: 3px solid #C85E32; outline-offset: 3px; }
+
+    .btn-ghost-light {
+      background: transparent;
+      border: 2px solid rgba(254,252,248,.65);
+      color: #FEFCF8;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-ghost-light:hover { background: rgba(254,252,248,.10); border-color: #FEFCF8; }
+    .btn-ghost-light:focus-visible { outline: 3px solid #FEFCF8; outline-offset: 3px; }
+
+    /* ── Decorative divider ── */
+    .squiggle {
+      width: 56px; height: 4px;
+      background: linear-gradient(90deg, #C85E32, #EDE0C4);
+      border-radius: 2px;
+      margin: 0 auto;
+    }
+
+    /* ── Advantage card ── */
+    .adv-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .adv-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 16px 48px rgba(200,94,50,.18), 0 4px 12px rgba(61,43,31,.10);
+    }
+
+    /* ── Mobile menu ── */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: block; }
+
+    /* ── Cart badge ── */
+    #cart-badge {
+      display: none;
+      position: absolute; top: -5px; right: -7px;
+      background: #C85E32; color: #FEFCF8;
+      border-radius: 9999px;
+      font-size: 10px; font-weight: 700;
+      min-width: 17px; height: 17px;
+      align-items: center; justify-content: center;
+      padding: 0 4px;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #F5EDD8; }
+    ::-webkit-scrollbar-thumb { background: #C85E32; border-radius: 3px; }
+
+    /* ── Focus ring ── */
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid #C85E32;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* ── Hero ── */
+    .hero-text-shadow { text-shadow: 0 1px 4px rgba(0,0,0,.7), 0 2px 20px rgba(0,0,0,.5); }
+
+    /* ── Product card ── */
+    .prod-card {
+      background: #FEFCF8;
+      border-radius: 16px;
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .prod-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 16px 48px rgba(200,94,50,.18), 0 4px 12px rgba(61,43,31,.10);
+    }
+    .prod-card img {
+      transition: transform 0.5s ease;
+    }
+    .prod-card:hover img { transform: scale(1.04); }
+
+    /* ── Cart button ── */
+    .btn-cart {
+      display: block; width: 100%;
+      border: 1.5px solid #C85E32;
+      color: #C85E32; background: transparent;
+      border-radius: 10px; padding: 10px 0;
+      font-family: 'Cabin', sans-serif;
+      font-size: 13px; font-weight: 600;
+      transition: background-color 0.2s ease, color 0.2s ease;
+      cursor: pointer;
+    }
+    .btn-cart:hover  { background: #C85E32; color: #FEFCF8; }
+    .btn-cart:active { transform: scale(0.97); }
+    .btn-cart:focus-visible { outline: 3px solid #C85E32; outline-offset: 3px; }
+
+    /* ── Catalog tabs ── */
+    .tab-btn { transition: background-color 0.2s ease, color 0.2s ease; cursor: pointer; }
+    .tab-btn.active { background: #C85E32 !important; color: #FEFCF8 !important; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: grid; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #3D2B1F; color: #F5EDD8;
+      padding: 12px 24px; border-radius: 12px;
+      font-family: 'Cabin', sans-serif;
+      font-size: 14px; font-weight: 500;
+      z-index: 100;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0; white-space: nowrap;
+      box-shadow: 0 8px 24px rgba(61,43,31,.3);
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    /* ── Format cards ── */
+    .format-card { transition: transform 0.3s ease; }
+    .format-card:hover { transform: translateY(-5px); }
+
+    /* ── Review card ── */
+    .review-card {
+      background: #FEFCF8;
+      border: 1px solid #EDE0C4;
+      border-radius: 16px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .review-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(200,94,50,.13);
+    }
+
+    /* ── Delivery info row ── */
+    .del-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #D4B896;
+    }
+    .del-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+    /* ── Hide scrollbar ── */
+    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+
+    /* ── Process step ── */
+    .step-wrap { position: relative; }
+    .step-bg-num {
+      font-family: 'Amatic SC', cursive;
+      font-size: 7rem; font-weight: 700; line-height: 1;
+      color: rgba(200,94,50,.10);
+      position: absolute; top: -12px; left: -6px;
+      pointer-events: none; user-select: none;
+    }
+
+    /* ── Form fields ── */
+    .form-field {
+      width: 100%;
+      background: #FEFCF8;
+      border: 1.5px solid #D4B896;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'Cabin', sans-serif;
+      font-size: 15px;
+      color: #3D2B1F;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+    }
+    .form-field::placeholder { color: #BA9A82; }
+    .form-field:focus {
+      outline: none;
+      border-color: #C85E32;
+      box-shadow: 0 0 0 3px rgba(200,94,50,.12);
+    }
+    .form-label {
+      display: block;
+      font-size: 13px; font-weight: 600;
+      color: #5C3D28;
+      margin-bottom: 6px;
+    }
+
+    /* ── App section input (dark bg) ── */
+    .form-field-dark {
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.20);
+      color: #F5EDD8;
+    }
+    .form-field-dark::placeholder { color: rgba(214,184,150,.6); }
+    .form-field-dark:focus {
+      border-color: rgba(232,132,92,.7);
+      box-shadow: 0 0 0 3px rgba(200,94,50,.18);
+    }
+
+    /* ── Footer ── */
+    .footer-link { color: #9A7A62; transition: color 0.2s ease; }
+    .footer-link:hover { color: #F5EDD8; }
+
+    /* ── Social icon ── */
+    .social-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px; border-radius: 10px;
+      background: rgba(255,255,255,.08);
+      transition: background-color 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    .social-btn:hover { background: rgba(200,94,50,.28); transform: translateY(-2px); }
+    .social-btn:focus-visible { outline: 3px solid #C85E32; outline-offset: 3px; }
+
+    /* ── Cart Sidebar ── */
+    #cart-overlay {
+      display: none; opacity: 0;
+      background: rgba(61,43,31,.55);
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      transition: opacity 0.3s ease;
+    }
+    #cart-sidebar {
+      transform: translateX(100%);
+      transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+      box-shadow: -8px 0 48px rgba(61,43,31,.22);
+    }
+    #cart-items-list::-webkit-scrollbar { width: 4px; }
+    #cart-items-list::-webkit-scrollbar-track { background: transparent; }
+    #cart-items-list::-webkit-scrollbar-thumb { background: #D4B896; border-radius: 2px; }
+
+    /* ── Order form fields ── */
+    .order-field {
+      width:100%; padding: 0.75rem 1rem; border-radius: 0.75rem;
+      border: 1px solid #EDE0C4; background: #FAF7F0;
+      color: #3D2B1F; font-size: 0.875rem;
+      transition: border-color 0.2s ease;
+      font-family: 'Cabin', sans-serif;
+    }
+    .order-field::placeholder { color: #D4B896; }
+    .order-field:focus { outline: none; border-color: #C85E32; box-shadow: 0 0 0 3px rgba(200,94,50,.15); }
+    .order-field.error { border-color: #C85E32; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     HEADER / NAVIGATION
+════════════════════════════════════════════ -->
+<header id="site-header" class="fixed top-0 left-0 right-0 z-40">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16 md:h-20">
+
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2 rounded-lg p-1"
+         aria-label="ЗаморозЪка — на главную">
+        <svg class="w-8 h-8 text-terra-500 shrink-0" viewBox="0 0 32 32" fill="none"
+             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <ellipse cx="16" cy="15" rx="11" ry="7" fill="currentColor" opacity="0.15"/>
+          <path d="M5 15C5 9.48 10.03 5 16 5C21.97 5 27 9.48 27 15C27 18.8 24.5 22.1 20.8 23.6L22 28L17.2 25.5C16.8 25.65 16.4 25.73 16 25.73C10.03 25.73 5 21.25 5 15Z"
+                fill="currentColor" opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+          <path d="M10 13.5C11 11.5 13.2 10.3 16 10.3C18.8 10.3 21 11.5 22 13.5"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M10 16.5C11.5 18.5 13.5 19.5 16 19.5C18.5 19.5 20.5 18.5 22 16.5"
+                stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <span class="font-display text-2xl md:text-3xl font-bold text-terra-500 leading-none">
+          ЗаморозЪка
+        </span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-7 lg:gap-9"
+           aria-label="Основная навигация">
+        <a href="#menu"     class="nav-link text-sm font-semibold text-bark-500 hover:text-terra-500 transition-colors duration-200">Меню</a>
+        <a href="#process"  class="nav-link text-sm font-semibold text-bark-500 hover:text-terra-500 transition-colors duration-200">О нас</a>
+        <a href="#delivery" class="nav-link text-sm font-semibold text-bark-500 hover:text-terra-500 transition-colors duration-200">Доставка</a>
+        <a href="#contacts" class="nav-link text-sm font-semibold text-bark-500 hover:text-terra-500 transition-colors duration-200">Контакты</a>
+      </nav>
+
+      <!-- Right actions -->
+      <div class="flex items-center gap-1 md:gap-3">
+
+        <!-- Cart button -->
+        <button id="cart-btn" aria-label="Корзина"
+                class="flex items-center gap-2 px-3 py-2 rounded-xl text-bark-500
+                       hover:text-terra-500 hover:bg-cream-300
+                       transition-colors duration-200 cursor-pointer">
+          <span class="relative">
+            <svg class="w-7 h-7" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
+            <span id="cart-badge" aria-live="polite">0</span>
+          </span>
+          <span class="hidden sm:inline text-sm font-semibold">Корзина</span>
+        </button>
+
+        <!-- Mobile hamburger -->
+        <button id="mobile-toggle"
+                aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu"
+                class="md:hidden p-2 rounded-xl text-bark-500 hover:text-terra-500
+                       hover:bg-cream-300 transition-colors duration-200 cursor-pointer">
+          <svg id="icon-burger" class="w-6 h-6" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="3" y1="6"  x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+          <svg id="icon-close" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="18" y1="6" x2="6"  y2="18"/>
+            <line x1="6"  y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobile-menu"
+       class="border-t border-cream-300 bg-cream-100/98"
+       style="backdrop-filter: blur(8px);"
+       role="navigation" aria-label="Мобильная навигация">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
+      <a href="#menu"     class="mobile-nav-link py-3 px-4 rounded-xl font-semibold text-bark-600 hover:bg-cream-300 hover:text-terra-500 transition-colors duration-200">Меню</a>
+      <a href="#process"  class="mobile-nav-link py-3 px-4 rounded-xl font-semibold text-bark-600 hover:bg-cream-300 hover:text-terra-500 transition-colors duration-200">О нас</a>
+      <a href="#delivery" class="mobile-nav-link py-3 px-4 rounded-xl font-semibold text-bark-600 hover:bg-cream-300 hover:text-terra-500 transition-colors duration-200">Доставка</a>
+      <a href="#contacts" class="mobile-nav-link py-3 px-4 rounded-xl font-semibold text-bark-600 hover:bg-cream-300 hover:text-terra-500 transition-colors duration-200">Контакты</a>
+    </div>
+  </div>
+</header>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 1 — HERO
+════════════════════════════════════════════ -->
+<section id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+
+  <!-- Background + overlays -->
+  <div class="absolute inset-0">
+    <video id="hero-video"
+           autoplay loop muted playsinline
+           class="w-full h-full object-cover"
+           aria-hidden="true">
+      <source src="assets/hero-video.mp4" type="video/mp4">
+    </video>
+    <!-- Soft left scrim — только за текстом, правая часть открыта -->
+    <div class="absolute inset-0"
+         style="background: linear-gradient(to right,
+           rgba(10,6,3,.52) 0%,
+           rgba(10,6,3,.22) 42%,
+           rgba(10,6,3,.00) 68%);">
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
+              pt-20 pb-36 md:pb-20">
+   <div class="max-w-xl text-left">
+
+    <!-- Eyebrow pill -->
+    <div class="inline-flex items-center gap-2 mb-7 reveal"
+         style="background: rgba(255,255,255,.09);
+                border: 1px solid rgba(255,255,255,.20);
+                padding: 8px 16px; border-radius: 9999px;
+                backdrop-filter: blur(4px); max-width:100%;">
+      <svg class="w-3.5 h-3.5 text-terra-300 shrink-0" viewBox="0 0 24 24"
+           fill="currentColor" aria-hidden="true">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      <span class="text-cream-200 font-medium" style="font-size:clamp(0.7rem,3vw,0.875rem);">
+        Ручная лепка&nbsp;·&nbsp;Натуральные ингредиенты<span class="hidden xs:inline">&nbsp;·&nbsp;Доставка по СПб</span>
+      </span>
+    </div>
+
+    <!-- H1 -->
+    <h1 class="font-display font-bold text-cream-50 hero-text-shadow mb-5 reveal delay-1"
+        style="font-size: clamp(3.2rem, 8vw, 6.5rem); line-height: 1.06;">
+      ЗаморозЪка&nbsp;—<br>
+      <span class="text-terra-300">когда хочется</span><br>
+      домашнего
+    </h1>
+
+    <!-- Sub -->
+    <p class="text-cream-300 text-lg md:text-xl mb-9
+              leading-relaxed reveal delay-2"
+       style="text-shadow: 0 1px 8px rgba(0,0,0,.25);">
+      Пельмени, вареники, блины и оладьи ручной лепки.
+      Горячими или замороженными&nbsp;— выбирать вам.
+      Доставляем по&nbsp;Санкт-Петербургу и&nbsp;пригородам до&nbsp;30&nbsp;км.
+    </p>
+
+    <!-- CTA buttons -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-start items-start reveal delay-3">
+      <a href="#contacts"
+         class="btn-primary inline-flex items-center justify-center gap-2.5
+                px-8 py-4 rounded-full text-base font-semibold shadow-warm-lg
+                w-full sm:w-auto">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        Заказать сейчас
+      </a>
+      <a href="#menu"
+         class="btn-ghost-light inline-flex items-center justify-center gap-2.5
+                px-8 py-4 rounded-full text-base font-semibold
+                w-full sm:w-auto">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        Смотреть меню
+      </a>
+    </div>
+
+    <!-- Stats row -->
+    <div class="flex flex-wrap justify-start gap-6 sm:gap-10 mt-14 reveal delay-4">
+      <div>
+        <div class="font-display font-bold text-terra-300 hero-text-shadow"
+             style="font-size: 3.2rem; line-height: 1;">500+</div>
+        <div class="text-cream-400 text-xs mt-1 tracking-wide uppercase">довольных клиентов</div>
+      </div>
+      <div class="hidden sm:block w-px self-stretch"
+           style="background: rgba(214,184,150,.25);"></div>
+      <div>
+        <div class="font-display font-bold text-terra-300 hero-text-shadow"
+             style="font-size: 3.2rem; line-height: 1;">4</div>
+        <div class="text-cream-400 text-xs mt-1 tracking-wide uppercase">вида блюд</div>
+      </div>
+      <div class="hidden sm:block w-px self-stretch"
+           style="background: rgba(214,184,150,.25);"></div>
+      <div>
+        <div class="font-display font-bold text-terra-300 hero-text-shadow"
+             style="font-size: 3.2rem; line-height: 1;">100%</div>
+        <div class="text-cream-400 text-xs mt-1 tracking-wide uppercase">ручная лепка</div>
+      </div>
+      <div class="hidden sm:block w-px self-stretch"
+           style="background: rgba(214,184,150,.25);"></div>
+      <div>
+        <div class="font-display font-bold text-terra-300 hero-text-shadow"
+             style="font-size: 3.2rem; line-height: 1;">30&nbsp;км</div>
+        <div class="text-cream-400 text-xs mt-1 tracking-wide uppercase">радиус доставки</div>
+      </div>
+    </div>
+
+   </div><!-- /.max-w-xl -->
+  </div>
+
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 2 — ПРЕИМУЩЕСТВА
+════════════════════════════════════════════ -->
+<section id="advantages" class="py-20 md:py-28" style="background-color: #F5EDD8;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Section header -->
+    <div class="text-center mb-14">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">
+        Наше преимущество
+      </p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size: clamp(2.4rem, 5vw, 3.6rem);">
+        Почему <span class="text-terra-500">ЗаморозЪка</span>
+      </h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <!-- 4-column grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+      <!-- Карточка 1: Ручная лепка -->
+      <article class="adv-card bg-cream-50 rounded-2xl p-7 shadow-warm text-center reveal delay-1">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 mx-auto"
+             style="background: rgba(200,94,50,.12);">
+          <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M18 11.5V9a2 2 0 0 0-2-2 2 2 0 0 0-2 2v1.5"/>
+            <path d="M14 10V8a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/>
+            <path d="M10 9.9V9a2 2 0 0 0-2-2 2 2 0 0 0-2 2v5"/>
+            <path d="M6 14v0a3.5 3.5 0 0 0 3.5 3.5v.5a2 2 0 0 0 2 2h.5a2 2 0 0 0 2-2v-2h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Ручная лепка</h3>
+        <p class="text-bark-400 text-sm leading-relaxed">
+          Каждый пельмень слеплен вручную — с заботой и душой, как дома
+        </p>
+      </article>
+
+      <!-- Карточка 2: Натуральный состав -->
+      <article class="adv-card bg-cream-50 rounded-2xl p-7 shadow-warm text-center reveal delay-2">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 mx-auto"
+             style="background: rgba(200,94,50,.12);">
+          <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M17 8C8 10 5.9 16.17 3.82 22"/>
+            <path d="M9.56 15.43c.83-2.38 2.49-4.52 5.22-5.8 1.25 3.65.64 7.91-2.5 10.18"/>
+            <path d="M14 4.73c1.7 1.7 2.5 4.1 2 6.27"/>
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Натуральный состав</h3>
+        <p class="text-bark-400 text-sm leading-relaxed">
+          Без консервантов и усилителей вкуса — только свежие проверенные ингредиенты
+        </p>
+      </article>
+
+      <!-- Карточка 3: Горячее или замороженное -->
+      <article class="adv-card bg-cream-50 rounded-2xl p-7 shadow-warm text-center reveal delay-3">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 mx-auto"
+             style="background: rgba(200,94,50,.12);">
+          <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6
+                     .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3
+                     a2.5 2.5 0 0 0 2.5 2.5z"/>
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Горячее или замороженное</h3>
+        <p class="text-bark-400 text-sm leading-relaxed">
+          Заказывайте готовое горячее блюдо или запас впрок — выбор за вами
+        </p>
+      </article>
+
+      <!-- Карточка 4: Доставка по СПб -->
+      <article class="adv-card bg-cream-50 rounded-2xl p-7 shadow-warm text-center reveal delay-4">
+        <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 mx-auto"
+             style="background: rgba(200,94,50,.12);">
+          <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="1" y="3" width="15" height="13" rx="1"/>
+            <path d="M16 8h4l3 3v5h-7V8z"/>
+            <circle cx="5.5"  cy="18.5" r="2.5"/>
+            <circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
+        <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Доставка по СПб</h3>
+        <p class="text-bark-400 text-sm leading-relaxed">
+          Доставляем по всему Санкт-Петербургу и пригородам в радиусе до 30&nbsp;км
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 3 — КАТАЛОГ
+════════════════════════════════════════════ -->
+<section id="menu" class="py-20 md:py-28" style="background-color:#FAF7F0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Заголовок -->
+    <div class="text-center mb-12">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Наша продукция</p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size:clamp(2.4rem,5vw,3.6rem);">Меню</h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <!-- Табы категорий -->
+    <div class="-mx-4 px-4 sm:mx-0 sm:px-0 mb-10 reveal delay-1">
+      <div class="flex overflow-x-auto no-scrollbar gap-2 pb-0.5 sm:justify-center sm:flex-wrap sm:overflow-visible"
+           role="tablist" aria-label="Категории меню">
+        <button class="tab-btn active px-5 py-2.5 rounded-full text-sm font-semibold bg-terra-500 text-cream-50 shrink-0"
+                role="tab" aria-selected="true" aria-controls="tab-pelmeni" data-tab="pelmeni">Пельмени</button>
+        <button class="tab-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-cream-300 text-bark-500 hover:bg-cream-400 shrink-0"
+                role="tab" aria-selected="false" aria-controls="tab-vareniki" data-tab="vareniki">Вареники</button>
+        <button class="tab-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-cream-300 text-bark-500 hover:bg-cream-400 shrink-0"
+                role="tab" aria-selected="false" aria-controls="tab-blini" data-tab="blini">Блины</button>
+        <button class="tab-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-cream-300 text-bark-500 hover:bg-cream-400 shrink-0"
+                role="tab" aria-selected="false" aria-controls="tab-syrniki" data-tab="syrniki">Сырники</button>
+      </div>
+    </div>
+
+    <!-- ── ПЕЛЬМЕНИ ── -->
+    <div id="tab-pelmeni" class="tab-panel active grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+         role="tabpanel" aria-labelledby="">
+
+      <article class="prod-card shadow-warm reveal delay-1">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Пельмени+классические"
+               alt="Пельмени классические — говядина и свинина"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">Классические</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Говядина + свинина, лук, специи</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">350&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 650&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Пельмени классические" data-price="350">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-2">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Пельмени+куриные"
+               alt="Пельмени куриные с зеленью"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">Куриные</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Куриное филе, лук, зелень</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">300&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 560&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Пельмени куриные" data-price="300">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-3">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Пельмени+с+грибами"
+               alt="Пельмени с грибами и луком"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С грибами</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Грибы, лук, зелень</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">320&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 600&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Пельмени с грибами" data-price="320">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-4">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Три+мяса"
+               alt="Пельмени три мяса — говядина, свинина, курица"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <span class="inline-block bg-bark-400 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Новинка</span>
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">Три мяса</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Говядина, свинина, курица</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">380&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 700&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Пельмени три мяса" data-price="380">В корзину</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- ── ВАРЕНИКИ ── -->
+    <div id="tab-vareniki" class="tab-panel grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+         role="tabpanel">
+
+      <article class="prod-card shadow-warm reveal delay-1">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Вареники+с+картофелем"
+               alt="Вареники с картофелем и луком"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">С картофелем</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Картофель, лук, укроп</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">280&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 520&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Вареники с картофелем" data-price="280">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-2">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Вареники+с+вишней"
+               alt="Вареники с вишней"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С вишней</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Вишня, сахар</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">300&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 560&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Вареники с вишней" data-price="300">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-3">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Вареники+с+творогом"
+               alt="Вареники с творогом"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С творогом</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, яйцо, ваниль</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">290&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 540&nbsp;₽/кг</span>
+          </div>
+          <button class="btn-cart" data-name="Вареники с творогом" data-price="290">В корзину</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- ── БЛИНЫ ── -->
+    <div id="tab-blini" class="tab-panel grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+         role="tabpanel">
+
+      <article class="prod-card shadow-warm reveal delay-1">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Блины+с+мясом"
+               alt="Блины с мясной начинкой"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">С мясом</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Говядина, лук, специи</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">320&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">10&nbsp;шт &nbsp;·&nbsp; 600&nbsp;₽/20&nbsp;шт</span>
+          </div>
+          <button class="btn-cart" data-name="Блины с мясом" data-price="320">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-2">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Блины+с+творогом"
+               alt="Блины с творогом и изюмом"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С творогом и изюмом</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, изюм, ваниль</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">290&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">10&nbsp;шт &nbsp;·&nbsp; 540&nbsp;₽/20&nbsp;шт</span>
+          </div>
+          <button class="btn-cart" data-name="Блины с творогом" data-price="290">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-3">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Блины+со+сгущёнкой"
+               alt="Блины со сгущённым молоком"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">Со сгущёнкой</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Молоко, сгущёнка, масло</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">260&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">10&nbsp;шт &nbsp;·&nbsp; 500&nbsp;₽/20&nbsp;шт</span>
+          </div>
+          <button class="btn-cart" data-name="Блины со сгущёнкой" data-price="260">В корзину</button>
+        </div>
+      </article>
+    </div>
+
+    <!-- ── СЫРНИКИ ── -->
+    <div id="tab-syrniki" class="tab-panel grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+         role="tabpanel">
+
+      <article class="prod-card shadow-warm reveal delay-1">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Сырники+классические"
+               alt="Сырники классические"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">Классические</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, яйцо, мука</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">200&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">10&nbsp;шт</span>
+          </div>
+          <button class="btn-cart" data-name="Сырники классические" data-price="200">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-2">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Сырники+с+яблоком"
+               alt="Сырники с яблоком и корицей"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С яблоком</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, яблоко, корица</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">220&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">10&nbsp;шт</span>
+          </div>
+          <button class="btn-cart" data-name="Сырники с яблоком" data-price="220">В корзину</button>
+        </div>
+      </article>
+
+      <article class="prod-card shadow-warm reveal delay-3">
+        <div class="overflow-hidden" style="aspect-ratio:4/3;">
+          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Сырники+с+изюмом"
+               alt="Сырники с изюмом"
+               class="w-full h-full object-cover" loading="lazy">
+        </div>
+        <div class="p-5">
+          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С изюмом</h3>
+          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, изюм, ваниль</p>
+          <div class="flex items-baseline justify-between mb-4">
+            <span class="text-terra-500 font-bold text-lg">210&nbsp;₽</span>
+            <span class="text-bark-300 text-xs">10&nbsp;шт</span>
+          </div>
+          <button class="btn-cart" data-name="Сырники с изюмом" data-price="210">В корзину</button>
+        </div>
+      </article>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 4 — КАК МЫ ГОТОВИМ
+════════════════════════════════════════════ -->
+<section id="process" class="py-20 md:py-28" style="background-color:#EDE0C4;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Заголовок -->
+    <div class="text-center mb-14">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Наш процесс</p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size:clamp(2.4rem,5vw,3.6rem);">Как мы готовим</h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <!-- 4 шага -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+      <!-- Шаг 1 -->
+      <div class="step-wrap reveal delay-1">
+        <span class="step-bg-num" aria-hidden="true">1</span>
+        <div class="relative z-10">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5"
+               style="background:rgba(200,94,50,.15);">
+            <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Выбираем свежее</h3>
+          <p class="text-bark-400 text-sm leading-relaxed">
+            Отбираем только проверенные фермерские ингредиенты — мясо, молоко, яйца и зелень
+          </p>
+        </div>
+      </div>
+
+      <!-- Шаг 2 -->
+      <div class="step-wrap reveal delay-2">
+        <span class="step-bg-num" aria-hidden="true">2</span>
+        <div class="relative z-10">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5"
+               style="background:rgba(200,94,50,.15);">
+            <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2z"/>
+              <path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Готовим тесто и начинку</h3>
+          <p class="text-bark-400 text-sm leading-relaxed">
+            По домашнему рецепту, без химии и лишних добавок — только то, что нужно
+          </p>
+        </div>
+      </div>
+
+      <!-- Шаг 3 -->
+      <div class="step-wrap reveal delay-3">
+        <span class="step-bg-num" aria-hidden="true">3</span>
+        <div class="relative z-10">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5"
+               style="background:rgba(200,94,50,.15);">
+            <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M18 11.5V9a2 2 0 0 0-2-2 2 2 0 0 0-2 2v1.5"/>
+              <path d="M14 10V8a2 2 0 0 0-2-2 2 2 0 0 0-2 2v2"/>
+              <path d="M10 9.9V9a2 2 0 0 0-2-2 2 2 0 0 0-2 2v5"/>
+              <path d="M6 14v0a3.5 3.5 0 0 0 3.5 3.5v.5a2 2 0 0 0 2 2h.5a2 2 0 0 0 2-2v-2h1.5a2.5 2.5 0 0 0 0-5H18"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Лепим вручную</h3>
+          <p class="text-bark-400 text-sm leading-relaxed">
+            Каждое изделие проходит через любящие руки — вот почему это не промышленный продукт
+          </p>
+        </div>
+      </div>
+
+      <!-- Шаг 4 -->
+      <div class="step-wrap reveal delay-4">
+        <span class="step-bg-num" aria-hidden="true">4</span>
+        <div class="relative z-10">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5"
+               style="background:rgba(200,94,50,.15);">
+            <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="1" y="3" width="15" height="13" rx="1"/>
+              <path d="M16 8h4l3 3v5h-7V8z"/>
+              <circle cx="5.5"  cy="18.5" r="2.5"/>
+              <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+          </div>
+          <h3 class="font-display text-2xl font-bold text-bark-600 mb-2">Доставляем к вам</h3>
+          <p class="text-bark-400 text-sm leading-relaxed">
+            Горячим прямо со сковороды или замороженным впрок — как вам удобнее
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 5 — ФОРМАТЫ ЗАКАЗА
+════════════════════════════════════════════ -->
+<section id="formats" class="py-20 md:py-28" style="background-color:#FAF7F0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="text-center mb-12">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Как получить заказ</p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size:clamp(2.4rem,5vw,3.6rem);">Форматы заказа</h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
+
+      <!-- Горячее -->
+      <div class="format-card rounded-3xl overflow-hidden shadow-warm-lg reveal delay-1"
+           style="background:linear-gradient(145deg,#3D2B1F 0%,#7A3D1E 100%);">
+        <div class="p-8 md:p-10 h-full flex flex-col">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 shrink-0"
+               style="background:rgba(232,132,92,.18);">
+            <svg class="w-7 h-7 text-terra-300" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6
+                       .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0
+                       c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+            </svg>
+          </div>
+          <div class="inline-block self-start bg-white/10 text-cream-200 text-xs font-semibold
+                      px-3 py-1 rounded-full mb-4">Горячее</div>
+          <h3 class="font-display text-4xl md:text-5xl font-bold text-cream-50 mb-3 leading-tight">
+            Горячим<br>к столу
+          </h3>
+          <p class="text-cream-300 text-sm leading-relaxed mb-6">
+            Готовим свежую партию и везём прямо к вам — горячим, ароматным,
+            как будто только что с плиты
+          </p>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-terra-300 shrink-0" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="text-cream-200 text-sm">Доставка 60–90 минут</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-terra-300 shrink-0" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="text-cream-200 text-sm">Привозим в термосумке</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-terra-300 shrink-0" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="text-cream-200 text-sm">Минимальный заказ — 1 500 ₽</span>
+            </li>
+          </ul>
+          <a href="#contacts"
+             class="btn-primary self-start inline-flex items-center gap-2
+                    px-7 py-3.5 rounded-full font-semibold text-sm">
+            Заказать горячее
+          </a>
+        </div>
+        <div class="h-1.5" style="background:linear-gradient(90deg,#C85E32,#E8845C,transparent);"></div>
+      </div>
+
+      <!-- Замороженное -->
+      <div class="format-card rounded-3xl overflow-hidden shadow-warm reveal delay-2"
+           style="background:#F5EDD8; border:2px solid #EDE0C4;">
+        <div class="p-8 md:p-10 h-full flex flex-col">
+          <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 shrink-0"
+               style="background:rgba(200,94,50,.12);">
+            <svg class="w-7 h-7 text-terra-500" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <line x1="12" y1="2" x2="12" y2="22"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="m9 5 3 4 3-4"/>
+              <path d="m9 19 3-4 3 4"/>
+              <path d="m5 9 4 3-4 3"/>
+              <path d="m19 9-4 3 4 3"/>
+              <line x1="5.64" y1="5.64" x2="18.36" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="5.64" y2="18.36"/>
+            </svg>
+          </div>
+          <div class="inline-block self-start bg-terra-500/10 text-terra-600 text-xs font-semibold
+                      px-3 py-1 rounded-full mb-4">Замороженное</div>
+          <h3 class="font-display text-4xl md:text-5xl font-bold text-bark-600 mb-3 leading-tight">
+            Запас<br>на потом
+          </h3>
+          <p class="text-bark-400 text-sm leading-relaxed mb-6">
+            Лепим, шоковая заморозка — и к вам. Храните дома до 3 месяцев
+            и готовьте в любой момент, когда захочется домашнего
+          </p>
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-terra-500 shrink-0" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="text-bark-500 text-sm">Хранение до 3 месяцев</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-terra-500 shrink-0" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="text-bark-500 text-sm">Сохраняет вкус и пользу</span>
+            </li>
+            <li class="flex items-center gap-3">
+              <svg class="w-4 h-4 text-terra-500 shrink-0" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              <span class="text-bark-500 text-sm">Выгоднее при заказе от 1 кг</span>
+            </li>
+          </ul>
+          <a href="#contacts"
+             class="self-start inline-flex items-center gap-2 px-7 py-3.5 rounded-full
+                    font-semibold text-sm cursor-pointer"
+             style="border:2px solid #C85E32; color:#C85E32;
+                    transition:background-color 0.2s ease,color 0.2s ease;"
+             onmouseenter="this.style.background='#C85E32';this.style.color='#FEFCF8'"
+             onmouseleave="this.style.background='transparent';this.style.color='#C85E32'">
+            Заказать замороженное
+          </a>
+        </div>
+        <div class="h-1.5" style="background:linear-gradient(90deg,#C85E32,#EDE0C4,transparent);"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 6 — ОТЗЫВЫ
+════════════════════════════════════════════ -->
+<section id="reviews" class="py-20 md:py-28" style="background-color:#F5EDD8;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="text-center mb-12">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Говорят клиенты</p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size:clamp(2.4rem,5vw,3.6rem);">Отзывы</h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+
+      <!-- Отзыв 1 -->
+      <article class="review-card p-6 shadow-warm reveal delay-1">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-cream-50"
+               style="background:#7A5A42;">ОМ</div>
+          <div>
+            <div class="font-semibold text-bark-600 text-sm leading-tight">Ольга М.</div>
+            <div class="text-bark-300 text-xs">Приморский район</div>
+          </div>
+        </div>
+        <!-- Stars -->
+        <div class="flex gap-0.5 mb-3" aria-label="Оценка 5 из 5">
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-bark-500 text-sm leading-relaxed italic">
+          «Заказываю уже третий раз — пельмени как у мамы, даже лучше! Дети в восторге, сразу просят ещё.»
+        </p>
+        <div class="text-bark-300 text-xs mt-3">Май 2025</div>
+      </article>
+
+      <!-- Отзыв 2 -->
+      <article class="review-card p-6 shadow-warm reveal delay-2">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-cream-50"
+               style="background:#C85E32;">ЕВ</div>
+          <div>
+            <div class="font-semibold text-bark-600 text-sm leading-tight">Екатерина В.</div>
+            <div class="text-bark-300 text-xs">Петроградская сторона</div>
+          </div>
+        </div>
+        <div class="flex gap-0.5 mb-3" aria-label="Оценка 5 из 5">
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-bark-500 text-sm leading-relaxed italic">
+          «Наконец-то нашла настоящие домашние вареники с вишней. Просто объедение! Очень быстрая доставка.»
+        </p>
+        <div class="text-bark-300 text-xs mt-3">Апрель 2025</div>
+      </article>
+
+      <!-- Отзыв 3 -->
+      <article class="review-card p-6 shadow-warm reveal delay-3">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-cream-50"
+               style="background:#5C3D28;">АК</div>
+          <div>
+            <div class="font-semibold text-bark-600 text-sm leading-tight">Андрей К.</div>
+            <div class="text-bark-300 text-xs">г. Пушкин</div>
+          </div>
+        </div>
+        <div class="flex gap-0.5 mb-3" aria-label="Оценка 5 из 5">
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-bark-500 text-sm leading-relaxed italic">
+          «Взял замороженные блины с мясом впрок — хватило на две недели. Качество отличное, без всякой химии.»
+        </p>
+        <div class="text-bark-300 text-xs mt-3">Март 2025</div>
+      </article>
+
+      <!-- Отзыв 4 -->
+      <article class="review-card p-6 shadow-warm reveal delay-4">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm text-cream-50"
+               style="background:#A84D28;">ТН</div>
+          <div>
+            <div class="font-semibold text-bark-600 text-sm leading-tight">Татьяна Н.</div>
+            <div class="text-bark-300 text-xs">Московский район</div>
+          </div>
+        </div>
+        <div class="flex gap-0.5 mb-3" aria-label="Оценка 5 из 5">
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <svg class="w-4 h-4 text-terra-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <p class="text-bark-500 text-sm leading-relaxed italic">
+          «Заказывали на большую компанию — 3 кг пельменей. Всё привезли вовремя и горячим. Как у бабушки!»
+        </p>
+        <div class="text-bark-300 text-xs mt-3">Февраль 2025</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 7 — ЗОНА ДОСТАВКИ
+════════════════════════════════════════════ -->
+<section id="delivery" class="py-20 md:py-28" style="background-color:#FAF7F0;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="text-center mb-12">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Куда привезём</p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size:clamp(2.4rem,5vw,3.6rem);">Зона доставки</h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+
+      <!-- Карта Leaflet -->
+      <div class="reveal delay-1">
+        <div id="delivery-map" class="shadow-warm-md"
+             style="height:400px; border-radius:16px; overflow:hidden; z-index:0;"></div>
+        <p class="text-bark-300 text-xs text-center mt-3">
+          Весь Санкт-Петербург + Пушкин, Гатчина, Всеволожск, Колпино и другие пригороды
+        </p>
+      </div>
+
+      <!-- Условия доставки -->
+      <div class="reveal delay-2">
+        <div class="bg-cream-200 rounded-2xl p-7 md:p-8 shadow-warm">
+          <h3 class="font-display text-3xl font-bold text-bark-600 mb-6">Условия доставки</h3>
+
+          <div class="del-row">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 style="background:rgba(200,94,50,.12);">
+              <svg class="w-5 h-5 text-terra-500" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <line x1="12" y1="1" x2="12" y2="23"/>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="font-semibold text-bark-600 text-sm">Стоимость доставки</div>
+              <div class="text-bark-400 text-sm mt-0.5">300 ₽ · <span class="text-terra-500 font-semibold">бесплатно от 2 500 ₽</span></div>
+            </div>
+          </div>
+
+          <div class="del-row">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 style="background:rgba(200,94,50,.12);">
+              <svg class="w-5 h-5 text-terra-500" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+              </svg>
+            </div>
+            <div>
+              <div class="font-semibold text-bark-600 text-sm">Минимальный заказ</div>
+              <div class="text-bark-400 text-sm mt-0.5">1 500 ₽</div>
+            </div>
+          </div>
+
+          <div class="del-row">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 style="background:rgba(200,94,50,.12);">
+              <svg class="w-5 h-5 text-terra-500" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <div>
+              <div class="font-semibold text-bark-600 text-sm">Время доставки</div>
+              <div class="text-bark-400 text-sm mt-0.5">60–90 минут</div>
+            </div>
+          </div>
+
+          <div class="del-row">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                 style="background:rgba(200,94,50,.12);">
+              <svg class="w-5 h-5 text-terra-500" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8"  y1="2" x2="8"  y2="6"/>
+                <line x1="3"  y1="10" x2="21" y2="10"/>
+              </svg>
+            </div>
+            <div>
+              <div class="font-semibold text-bark-600 text-sm">График работы</div>
+              <div class="text-bark-400 text-sm mt-0.5">Пн–Пт 10:00–20:00</div>
+              <div class="text-bark-400 text-sm">Сб–Вс 10:00–18:00</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Экстра-CTA -->
+        <div class="mt-5 flex flex-col sm:flex-row gap-3">
+          <a href="#contacts"
+             class="btn-primary flex-1 inline-flex items-center justify-center gap-2
+                    px-6 py-3.5 rounded-full font-semibold text-sm">
+            Оформить заказ
+          </a>
+          <a href="tel:+78120000000"
+             class="flex-1 inline-flex items-center justify-center gap-2
+                    px-6 py-3.5 rounded-full font-semibold text-sm cursor-pointer"
+             style="border:2px solid #C85E32; color:#C85E32;
+                    transition:background-color 0.2s ease,color 0.2s ease;"
+             onmouseenter="this.style.background='#C85E32';this.style.color='#FEFCF8'"
+             onmouseleave="this.style.background='transparent';this.style.color='#C85E32'">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+            Позвонить
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 8 — АНОНС МОБИЛЬНОГО ПРИЛОЖЕНИЯ
+════════════════════════════════════════════ -->
+<section id="app" class="py-20 md:py-28 overflow-hidden"
+         style="background:linear-gradient(135deg,#3D2B1F 0%,#5C3D28 50%,#8B3D1E 100%);">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+      <!-- Текст + форма -->
+      <div class="reveal delay-1">
+        <div class="inline-flex items-center gap-2 mb-6"
+             style="background:rgba(232,132,92,.14);
+                    border:1px solid rgba(232,132,92,.28);
+                    padding:6px 16px; border-radius:9999px;">
+          <span class="w-1.5 h-1.5 rounded-full bg-terra-300 animate-pulse block"></span>
+          <span class="text-terra-300 text-xs font-semibold tracking-widest uppercase">Скоро</span>
+        </div>
+
+        <h2 class="font-display font-bold text-cream-50 mb-4"
+            style="font-size:clamp(2.4rem,5vw,3.8rem); line-height:1.06;">
+          Приложение<br>
+          <span class="text-terra-300">ЗаморозЪки</span>
+        </h2>
+
+        <p class="text-cream-300 text-base leading-relaxed mb-8 max-w-md">
+          Заказывайте любимые блюда ещё удобнее — прямо со смартфона.
+          Скоро в App Store и Google Play. Оставьте email,
+          чтобы узнать о запуске первым.
+        </p>
+
+        <!-- Store badges -->
+        <div class="flex flex-wrap gap-3 mb-8">
+          <div class="inline-flex items-center gap-3 px-4 py-3 rounded-xl select-none"
+               style="background:rgba(255,255,255,.08);
+                      border:1px solid rgba(255,255,255,.14);">
+            <svg class="w-6 h-6 text-cream-100 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+            </svg>
+            <div>
+              <div class="text-cream-400 text-xs leading-none mb-0.5">Скоро в</div>
+              <div class="text-cream-100 text-sm font-semibold leading-none">App Store</div>
+            </div>
+          </div>
+          <div class="inline-flex items-center gap-3 px-4 py-3 rounded-xl select-none"
+               style="background:rgba(255,255,255,.08);
+                      border:1px solid rgba(255,255,255,.14);">
+            <svg class="w-6 h-6 text-cream-100 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3.18 23.76c.3.17.66.17.97-.01L17.27 16.16l-2.97-2.99-11.12 10.59zM.22 1.41C.08 1.7 0 2.04 0 2.44v19.12c0 .4.08.74.22 1.03l.11.1 10.7-10.7v-.24L.33 1.3zM20.55 10.56l-2.86-1.65-3.29 3.3 3.29 3.3 2.87-1.66c.82-.47.82-1.24-.01-1.29zM3.18.24L16.3 7.83l-2.97 2.98L2.2.22z"/>
+            </svg>
+            <div>
+              <div class="text-cream-400 text-xs leading-none mb-0.5">Скоро в</div>
+              <div class="text-cream-100 text-sm font-semibold leading-none">Google Play</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email form -->
+        <form id="app-notify-form" novalidate
+              class="flex flex-col sm:flex-row gap-3 max-w-md">
+          <div class="flex-1">
+            <label for="notify-email" class="sr-only">Ваш email</label>
+            <input id="notify-email" type="email" name="email"
+                   placeholder="Ваш email"
+                   autocomplete="email" required
+                   class="form-field form-field-dark">
+          </div>
+          <button type="submit"
+                  class="btn-primary shrink-0 px-6 py-3 rounded-xl font-semibold text-sm whitespace-nowrap">
+            Уведомить меня
+          </button>
+        </form>
+        <p id="app-notify-ok"
+           class="hidden mt-3 text-terra-300 text-sm font-medium">
+          ✓ Отлично! Сообщим о запуске первым делом.
+        </p>
+      </div>
+
+      <!-- Макет телефона -->
+      <div class="hidden lg:flex justify-center lg:justify-end reveal delay-2">
+        <div class="relative">
+          <div class="w-52 md:w-60 rounded-[2.5rem] overflow-hidden shadow-warm-lg"
+               style="border:3px solid rgba(255,255,255,.13);">
+            <img src="assets/zamorozka.png"
+                 alt="Приложение ЗаморозЪка"
+                 class="w-full object-contain"
+                 loading="lazy">
+          </div>
+          <!-- Decorative glow -->
+          <div class="absolute inset-0 -z-10 rounded-full opacity-40"
+               style="background:radial-gradient(circle,#C85E32 0%,transparent 70%);
+                      transform:scale(1.6); filter:blur(32px);"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 9 — КОНТАКТЫ И ФОРМА ЗАКАЗА
+════════════════════════════════════════════ -->
+<section id="contacts" class="py-20 md:py-28" style="background-color:#EDE0C4;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <div class="text-center mb-12">
+      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Оформить заказ</p>
+      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
+          style="font-size:clamp(2.4rem,5vw,3.6rem);">Свяжитесь с нами</h2>
+      <div class="squiggle reveal delay-2"></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+
+      <!-- CTA блок -->
+      <div class="reveal delay-1">
+        <div class="bg-cream-50 rounded-2xl p-7 md:p-10 shadow-warm-md h-full flex flex-col justify-center">
+          <h3 class="font-display font-bold text-bark-600 mb-4 leading-tight"
+              style="font-size:clamp(2.6rem,4vw,3.8rem);">Готовы заказать?</h3>
+          <p class="text-bark-400 text-base leading-relaxed mb-8">
+            Напишите нам в Telegram или MAX — оформим заказ за минуту
+          </p>
+          <div class="flex flex-col gap-3">
+            <a href="https://t.me/zamorozka_spb" target="_blank" rel="noopener noreferrer"
+               class="flex items-center justify-center gap-3 py-4 px-6 rounded-xl
+                      font-semibold text-sm text-white hover:opacity-90
+                      transition-opacity duration-200"
+               style="background:#26A5E4;">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
+              Написать в Telegram
+            </a>
+            <a href="https://max.ru" target="_blank" rel="noopener noreferrer"
+               class="flex items-center justify-center gap-3 py-4 px-6 rounded-xl
+                      font-semibold text-sm text-white hover:opacity-90
+                      transition-opacity duration-200"
+               style="background:linear-gradient(135deg,#4B9EFF 0%,#7C3AED 100%);">
+              <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                <path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+              </svg>
+              Открыть в MAX
+            </a>
+          </div>
+          <p class="text-bark-300 text-xs text-center mt-6">
+            Принимаем заказы по телефону:<br>
+            <a href="tel:+78120000000"
+               class="text-terra-500 font-semibold hover:underline">+7 (812) 000-00-00</a>
+          </p>
+        </div>
+      </div>
+
+      <!-- Контактная информация -->
+      <div class="reveal delay-2 flex flex-col gap-4">
+
+        <!-- Телефон -->
+        <div class="bg-cream-50 rounded-2xl p-6 shadow-warm">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                 style="background:rgba(200,94,50,.12);">
+              <svg class="w-6 h-6 text-terra-500" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.96a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="text-bark-300 text-xs font-semibold uppercase tracking-wide mb-0.5">Телефон</div>
+              <a href="tel:+78120000000"
+                 class="font-bold text-bark-600 text-lg hover:text-terra-500 transition-colors duration-200">
+                +7 (812) 000-00-00
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Мессенджеры -->
+        <div class="bg-cream-50 rounded-2xl p-6 shadow-warm">
+          <div class="text-bark-300 text-xs font-semibold uppercase tracking-wide mb-4">
+            Написать нам
+          </div>
+          <div class="flex flex-col gap-2">
+            <a href="https://max.ru" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-cream-200
+                      transition-colors duration-200 cursor-pointer">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                   style="background:linear-gradient(135deg,#4B9EFF 0%,#7C3AED 100%);">
+                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                  <path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-bark-600 text-sm">MAX</div>
+                <div class="text-bark-300 text-xs">Национальный мессенджер</div>
+              </div>
+              <svg class="w-4 h-4 text-bark-200 ml-auto" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+
+            <a href="https://t.me/zamorozka_spb" target="_blank" rel="noopener noreferrer"
+               class="flex items-center gap-3 p-3 rounded-xl hover:bg-cream-200
+                      transition-colors duration-200 cursor-pointer">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                   style="background:#26A5E4;">
+                <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                </svg>
+              </div>
+              <div>
+                <div class="font-semibold text-bark-600 text-sm">Telegram</div>
+                <div class="text-bark-300 text-xs">@zamorozka_spb</div>
+              </div>
+              <svg class="w-4 h-4 text-bark-200 ml-auto" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Адрес -->
+        <div class="bg-cream-50 rounded-2xl p-6 shadow-warm">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                 style="background:rgba(200,94,50,.12);">
+              <svg class="w-6 h-6 text-terra-500" viewBox="0 0 24 24" fill="none"
+                   stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+            </div>
+            <div>
+              <div class="text-bark-300 text-xs font-semibold uppercase tracking-wide mb-1">
+                Адрес производства
+              </div>
+              <div class="font-semibold text-bark-600 text-sm leading-relaxed">
+                Санкт-Петербург<br>
+                <span class="text-bark-400 font-normal">Василеостровский район</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════
+     БЛОК 10 — FOOTER
+════════════════════════════════════════════ -->
+<footer style="background-color:#3D2B1F;">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Main footer grid -->
+    <div class="py-12 grid grid-cols-2 md:grid-cols-4 gap-8 border-b"
+         style="border-color:rgba(255,255,255,.08);">
+
+      <!-- Бренд -->
+      <div class="col-span-2 md:col-span-1">
+        <a href="#" class="flex items-center gap-2 mb-4 group w-fit">
+          <svg class="w-7 h-7 text-terra-400 shrink-0" viewBox="0 0 32 32" fill="none"
+               xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <ellipse cx="16" cy="15" rx="11" ry="7" fill="currentColor" opacity="0.15"/>
+            <path d="M5 15C5 9.48 10.03 5 16 5C21.97 5 27 9.48 27 15C27 18.8 24.5 22.1 20.8 23.6L22 28L17.2 25.5C16.8 25.65 16.4 25.73 16 25.73C10.03 25.73 5 21.25 5 15Z"
+                  fill="currentColor" opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+            <path d="M10 13.5C11 11.5 13.2 10.3 16 10.3C18.8 10.3 21 11.5 22 13.5"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M10 16.5C11.5 18.5 13.5 19.5 16 19.5C18.5 19.5 20.5 18.5 22 16.5"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <span class="font-display text-2xl font-bold text-cream-100 leading-none
+                       group-hover:text-terra-400 transition-colors duration-200">
+            ЗаморозЪка
+          </span>
+        </a>
+        <p class="text-bark-200 text-sm leading-relaxed mb-5 max-w-xs">
+          Домашние полуфабрикаты ручной лепки — слеплено с душой и доставлено с теплом
+        </p>
+        <!-- Соцсети -->
+        <div class="flex gap-2">
+          <a href="#" aria-label="ВКонтакте" class="social-btn">
+            <svg class="w-4 h-4 text-cream-200" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14C20.67 22 22 20.67 22 15.07V8.93C22 3.33 20.67 2 15.07 2zm3.08 13.5h-1.6c-.6 0-.79-.48-1.87-1.58-.94-.93-1.36-.93-1.6-.93-.32 0-.42.09-.42.53v1.43c0 .38-.12.6-1.1.6-1.63 0-3.43-1-4.7-2.8C5.52 10.6 5 8.88 5 8.5c0-.24.09-.46.53-.46h1.6c.4 0 .55.18.7.6.77 2.23 2.07 4.18 2.6 4.18.2 0 .29-.09.29-.59V9.98c-.06-1.07-.62-1.16-.62-1.54 0-.18.15-.37.4-.37h2.52c.33 0 .45.18.45.55v3.01c0 .33.15.45.24.45.2 0 .37-.12.74-.5 1.15-1.3 1.97-3.3 1.97-3.3.11-.24.3-.46.7-.46h1.6c.48 0 .59.25.48.58-.2.94-2.13 3.65-2.13 3.65-.17.28-.23.4 0 .7.17.24.73.74 1.1 1.19.68.77 1.2 1.42 1.34 1.87.14.44-.08.67-.53.67z"/>
+            </svg>
+          </a>
+          <a href="https://t.me/zamorozka_spb" target="_blank" rel="noopener noreferrer"
+             aria-label="Telegram" class="social-btn">
+            <svg class="w-4 h-4 text-cream-200" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+            </svg>
+          </a>
+          <a href="https://max.ru" target="_blank" rel="noopener noreferrer"
+             aria-label="MAX" class="social-btn"
+             style="background:linear-gradient(135deg,#4B9EFF 0%,#7C3AED 100%);">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+              <path d="M20 2H4C2.9 2 2 2.9 2 4v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Меню -->
+      <div>
+        <div class="text-cream-300 text-xs font-semibold uppercase tracking-widest mb-4">Меню</div>
+        <ul class="flex flex-col gap-2.5">
+          <li><a href="#menu" class="footer-link text-sm">Пельмени</a></li>
+          <li><a href="#menu" class="footer-link text-sm">Вареники</a></li>
+          <li><a href="#menu" class="footer-link text-sm">Блины</a></li>
+          <li><a href="#menu" class="footer-link text-sm">Сырники</a></li>
+        </ul>
+      </div>
+
+      <!-- О нас -->
+      <div>
+        <div class="text-cream-300 text-xs font-semibold uppercase tracking-widest mb-4">Компания</div>
+        <ul class="flex flex-col gap-2.5">
+          <li><a href="#advantages" class="footer-link text-sm">О нас</a></li>
+          <li><a href="#process"    class="footer-link text-sm">Как готовим</a></li>
+          <li><a href="#delivery"   class="footer-link text-sm">Доставка</a></li>
+          <li><a href="#app"        class="footer-link text-sm">Приложение</a></li>
+          <li><a href="#contacts"   class="footer-link text-sm">Контакты</a></li>
+        </ul>
+      </div>
+
+      <!-- Контакты -->
+      <div class="col-span-2 md:col-span-1">
+        <div class="text-cream-300 text-xs font-semibold uppercase tracking-widest mb-4">Контакты</div>
+        <ul class="flex flex-col gap-3">
+          <li>
+            <a href="tel:+78120000000"
+               class="footer-link text-sm font-semibold">
+              +7 (812) 000-00-00
+            </a>
+          </li>
+          <li class="text-bark-200 text-xs leading-relaxed">
+            Пн–Пт: 10:00–20:00<br>
+            Сб–Вс: 10:00–18:00
+          </li>
+          <li>
+            <a href="#contacts"
+               class="btn-primary inline-flex items-center gap-1.5
+                      px-4 py-2 rounded-full text-xs font-semibold mt-1">
+              Заказать
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="text-bark-300 text-xs">
+        © 2025 ЗаморозЪка · Домашние полуфабрикаты ручной лепки · Санкт-Петербург
+      </div>
+      <div class="flex items-center gap-5">
+        <a href="#" class="footer-link text-xs">Политика конфиденциальности</a>
+        <a href="#" class="footer-link text-xs">Публичная оферта</a>
+      </div>
+    </div>
+
+  </div>
+</footer>
+
+
+<!-- Toast уведомление -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+<!-- ════════════════════════════════════════════
+     CART SIDEBAR
+════════════════════════════════════════════ -->
+<div id="cart-overlay" class="fixed inset-0 z-40" aria-hidden="true"></div>
+
+<aside id="cart-sidebar"
+       class="fixed top-0 right-0 z-50 h-full w-full sm:max-w-sm flex flex-col"
+       style="background:#FEFCF8;"
+       role="dialog" aria-modal="true" aria-labelledby="cart-sidebar-title">
+
+  <div class="flex items-center justify-between px-6 py-5 shrink-0"
+       style="border-bottom:1px solid #EDE0C4;">
+    <div class="flex items-center gap-3">
+      <svg class="w-6 h-6 text-terra-500" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+        <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+      </svg>
+      <h2 id="cart-sidebar-title"
+          class="font-display font-bold text-bark-600" style="font-size:1.9rem;">Корзина</h2>
+    </div>
+    <button id="cart-close" aria-label="Закрыть корзину"
+            class="p-2 rounded-xl text-bark-400 hover:text-terra-500 hover:bg-cream-200
+                   transition-colors duration-200 cursor-pointer">
+      <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="cart-items-list" class="flex-1 overflow-y-auto px-6 py-2"></div>
+
+  <div id="cart-footer" class="hidden shrink-0 px-6 py-5"
+       style="border-top:1px solid #EDE0C4;">
+    <div class="flex justify-between items-center mb-4">
+      <span class="text-bark-400 text-sm font-semibold">Итого:</span>
+      <span id="cart-total" class="font-bold text-bark-600 text-xl"></span>
+    </div>
+    <button id="cart-checkout"
+            class="btn-primary w-full py-4 rounded-xl font-semibold text-sm cursor-pointer">
+      Оформить заказ
+    </button>
+  </div>
+</aside>
+
+
+<!-- ════════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+  /* ── Header scroll state ── */
+  const header = document.getElementById('site-header');
+  window.addEventListener('scroll', () => {
+    header.classList.toggle('scrolled', window.scrollY > 30);
+  }, { passive: true });
+
+  /* ── Mobile menu ── */
+  const toggle    = document.getElementById('mobile-toggle');
+  const mobileNav = document.getElementById('mobile-menu');
+  const burgerIco = document.getElementById('icon-burger');
+  const closeIco  = document.getElementById('icon-close');
+
+  toggle.addEventListener('click', () => {
+    const open = mobileNav.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open);
+    burgerIco.classList.toggle('hidden', open);
+    closeIco.classList.toggle('hidden', !open);
+  });
+
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      toggle.setAttribute('aria-expanded', 'false');
+      burgerIco.classList.remove('hidden');
+      closeIco.classList.add('hidden');
+    });
+  });
+
+  /* ── Scroll reveal (IntersectionObserver) ── */
+  const revealObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.10, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  /* ── Табы каталога ── */
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+      const panel = document.getElementById('tab-' + target);
+      if (panel) {
+        panel.classList.add('active');
+        panel.querySelectorAll('.reveal').forEach(el => {
+          el.classList.remove('visible');
+          revealObserver.observe(el);
+        });
+      }
+    });
+  });
+
+  /* ── Корзина ── */
+  let cartItems = [];
+  const cartBadge = document.getElementById('cart-badge');
+  const toast     = document.getElementById('toast');
+  let toastTimer;
+
+  /* — Sidebar — */
+  const sidebar = document.getElementById('cart-sidebar');
+  const overlay = document.getElementById('cart-overlay');
+
+  function openCart() {
+    overlay.style.display = 'block';
+    requestAnimationFrame(() => { overlay.style.opacity = '1'; });
+    sidebar.style.transform = 'translateX(0)';
+    document.body.style.overflow = 'hidden';
+    document.getElementById('cart-close').focus();
+  }
+
+  function closeCart() {
+    sidebar.style.transform = 'translateX(100%)';
+    overlay.style.opacity = '0';
+    setTimeout(() => { overlay.style.display = 'none'; }, 300);
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cart-btn').addEventListener('click', openCart);
+  document.getElementById('cart-close').addEventListener('click', closeCart);
+  overlay.addEventListener('click', closeCart);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCart(); });
+  document.getElementById('cart-checkout').addEventListener('click', () => {
+    saveCart();
+    window.location.href = 'order.html';
+  });
+
+  /* — localStorage — */
+  const CART_KEY = 'zamorozka_cart';
+  function saveCart() {
+    try { localStorage.setItem(CART_KEY, JSON.stringify(cartItems)); } catch {}
+  }
+
+  /* — Helpers — */
+  function showToast(msg) {
+    clearTimeout(toastTimer);
+    toast.textContent = msg;
+    toast.classList.add('show');
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
+  }
+
+  function formatPrice(p) {
+    return p.toLocaleString('ru-RU') + ' ₽';
+  }
+
+  function getTotal() {
+    return cartItems.reduce((sum, i) => sum + i.price * i.qty, 0);
+  }
+
+  function escAttr(s) {
+    return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+  }
+
+  /* — Badge — */
+  function updateBadge() {
+    const n = cartItems.reduce((sum, i) => sum + i.qty, 0);
+    cartBadge.textContent = n;
+    cartBadge.style.display = n > 0 ? 'inline-flex' : 'none';
+    document.getElementById('cart-btn').setAttribute('aria-label',
+      `Корзина (${n} товар${n === 1 ? '' : n < 5 ? 'а' : 'ов'})`);
+  }
+
+  /* — Sidebar render — */
+  function renderCart() {
+    const list   = document.getElementById('cart-items-list');
+    const footer = document.getElementById('cart-footer');
+    const total  = document.getElementById('cart-total');
+
+    if (!cartItems.length) {
+      list.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full py-16 text-center">
+          <svg class="w-16 h-16 mb-4" style="color:#D4B896;" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+            <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+          </svg>
+          <p class="font-semibold text-lg" style="color:#9A7A62;">Корзина пуста</p>
+          <p class="text-sm mt-1" style="color:#D4B896;">Добавьте товары из каталога</p>
+        </div>`;
+      footer.classList.add('hidden');
+      return;
+    }
+
+    list.innerHTML = cartItems.map(item => `
+      <div class="flex items-center gap-3 py-4" style="border-bottom:1px solid #F5EDD8;">
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold text-sm leading-tight" style="color:#3D2B1F;">${item.name}</div>
+          <div class="text-sm font-bold mt-0.5" style="color:#C85E32;">${formatPrice(item.price * item.qty)}</div>
+          <div class="text-xs mt-0.5" style="color:#BA9A82;">${formatPrice(item.price)} × ${item.qty}</div>
+        </div>
+        <div class="flex items-center gap-1 shrink-0">
+          <button data-action="decrease" data-name="${escAttr(item.name)}"
+                  aria-label="Меньше"
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold
+                         cursor-pointer transition-colors duration-200"
+                  style="border:1px solid #EDE0C4; color:#9A7A62; background:#FEFCF8;"
+                  onmouseover="this.style.borderColor='#C85E32';this.style.color='#C85E32';"
+                  onmouseout="this.style.borderColor='#EDE0C4';this.style.color='#9A7A62';">−</button>
+          <span class="w-7 text-center font-bold text-sm" style="color:#3D2B1F;">${item.qty}</span>
+          <button data-action="increase" data-name="${escAttr(item.name)}"
+                  aria-label="Больше"
+                  class="w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold
+                         cursor-pointer transition-colors duration-200"
+                  style="border:1px solid #EDE0C4; color:#9A7A62; background:#FEFCF8;"
+                  onmouseover="this.style.borderColor='#C85E32';this.style.color='#C85E32';"
+                  onmouseout="this.style.borderColor='#EDE0C4';this.style.color='#9A7A62';">+</button>
+        </div>
+        <button data-action="remove" data-name="${escAttr(item.name)}"
+                aria-label="Удалить ${item.name}"
+                class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer
+                       transition-colors duration-200 shrink-0"
+                style="color:#D4B896;"
+                onmouseover="this.style.color='#C85E32';this.style.background='#F5EDD8';"
+                onmouseout="this.style.color='#D4B896';this.style.background='transparent';">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+            <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+          </svg>
+        </button>
+      </div>`).join('');
+
+    total.textContent = formatPrice(getTotal());
+    footer.classList.remove('hidden');
+  }
+
+  /* — Cart mutation actions — */
+  function removeFromCart(name) {
+    cartItems = cartItems.filter(i => i.name !== name);
+    saveCart(); updateBadge(); renderCart();
+  }
+
+  function changeQty(name, delta) {
+    const item = cartItems.find(i => i.name === name);
+    if (!item) return;
+    item.qty = Math.max(0, item.qty + delta);
+    if (item.qty === 0) cartItems = cartItems.filter(i => i.name !== name);
+    saveCart(); updateBadge(); renderCart();
+  }
+
+  /* delegated handler for sidebar buttons */
+  document.addEventListener('click', e => {
+    const action = e.target.closest('[data-action]');
+    if (action) {
+      const name = action.dataset.name;
+      if (action.dataset.action === 'increase') changeQty(name, 1);
+      if (action.dataset.action === 'decrease') changeQty(name, -1);
+      if (action.dataset.action === 'remove')   removeFromCart(name);
+      return;
+    }
+    /* — Add to cart — */
+    const btn = e.target.closest('.btn-cart');
+    if (!btn) return;
+    const name  = btn.dataset.name;
+    const price = Number(btn.dataset.price);
+    const existing = cartItems.find(i => i.name === name);
+    if (existing) { existing.qty++; } else { cartItems.push({ name, price, qty: 1 }); }
+    saveCart(); updateBadge(); renderCart();
+    showToast(`${name} добавлен в корзину`);
+    openCart();
+  });
+
+  renderCart();
+
+  /* ── Карта доставки (Leaflet) ── */
+  (function initDeliveryMap() {
+    const mapEl = document.getElementById('delivery-map');
+    if (!mapEl || typeof L === 'undefined') return;
+
+    const CENTER = [59.9386, 30.3141];
+
+    const map = L.map('delivery-map', {
+      center: CENTER,
+      zoom: 10,
+      scrollWheelZoom: false,
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 18,
+    }).addTo(map);
+
+    /* Зона 30 км */
+    L.circle(CENTER, {
+      radius: 30000,
+      color: '#C85E32',
+      fillColor: '#C85E32',
+      fillOpacity: 0.15,
+      weight: 2,
+      opacity: 0.7,
+    }).addTo(map);
+
+    /* Маркер производства */
+    const icon = L.divIcon({
+      className: '',
+      html: `<div style="
+        width:36px; height:36px; border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg);
+        background:#C85E32;
+        border:3px solid #FEFCF8;
+        box-shadow:0 2px 8px rgba(61,43,31,.35);
+      "></div>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 36],
+      popupAnchor: [0, -38],
+    });
+
+    L.marker(CENTER, { icon })
+      .addTo(map)
+      .bindPopup(
+        '<b style="font-family:\'Amatic SC\',cursive;font-size:1.2rem;">ЗаморозЪка</b>' +
+        '<br><span style="font-size:0.8rem;color:#7A5A42;">Производство и доставка</span>',
+        { maxWidth: 180 }
+      )
+      .openPopup();
+  })();
+
+  /* ── Форма уведомления (приложение) ── */
+  document.getElementById('app-notify-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const input = document.getElementById('notify-email');
+    if (!input.value || !input.validity.valid) {
+      input.focus();
+      return;
+    }
+    const ok = document.getElementById('app-notify-ok');
+    e.target.style.display = 'none';
+    ok.classList.remove('hidden');
+  });
+
+  /* ── prefers-reduced-motion: пауза видео ── */
+  const heroVideo = document.getElementById('hero-video');
+  if (heroVideo) {
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const applyMotionPref = (mq) => {
+      if (mq.matches) {
+        heroVideo.pause();
+      } else {
+        heroVideo.play().catch(() => {});
+      }
+    };
+    applyMotionPref(motionQuery);
+    motionQuery.addEventListener('change', applyMotionPref);
+  }
+</script>
+
+
+<!-- ===== AI ЧАТ-ВИДЖЕТ ЗаморозЪка ===== -->
+<div id="zam-chat">
+  <button id="zam-toggle" aria-label="Открыть чат">💬</button>
+  <div id="zam-window" class="zam-hidden">
+    <div id="zam-header">
+      <span>🥟 Помощник ЗаморозЪка</span>
+      <button id="zam-close" aria-label="Закрыть">✕</button>
+    </div>
+    <div id="zam-messages"></div>
+    <div id="zam-input-row">
+      <input id="zam-input" type="text" placeholder="Спросите про меню или доставку..." autocomplete="off">
+      <button id="zam-send">➤</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  #zam-chat { position: fixed; bottom: 20px; right: 20px; z-index: 9999; font-family: system-ui, sans-serif; }
+  #zam-toggle {
+    width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #2563eb, #0ea5e9); color: #fff; font-size: 26px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25); transition: transform .2s;
+  }
+  #zam-toggle:hover { transform: scale(1.08); }
+  #zam-window {
+    width: 340px; max-width: calc(100vw - 40px); height: 480px; max-height: calc(100vh - 120px);
+    display: flex; flex-direction: column; background: #fff; border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.3); overflow: hidden;
+  }
+  #zam-header {
+    background: linear-gradient(135deg, #2563eb, #0ea5e9); color: #fff;
+    padding: 14px 16px; font-weight: 600; display: flex; justify-content: space-between; align-items: center;
+  }
+  #zam-header button { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; }
+  #zam-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: #f8fafc; }
+  .zam-msg { max-width: 80%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.4; white-space: pre-wrap; }
+  .zam-user { align-self: flex-end; background: #2563eb; color: #fff; border-bottom-right-radius: 4px; }
+  .zam-bot { align-self: flex-start; background: #e2e8f0; color: #1e293b; border-bottom-left-radius: 4px; }
+  #zam-input-row { display: flex; padding: 10px; gap: 8px; border-top: 1px solid #e2e8f0; background: #fff; }
+  #zam-input { flex: 1; border: 1px solid #cbd5e1; border-radius: 20px; padding: 10px 14px; font-size: 14px; outline: none; }
+  #zam-input:focus { border-color: #2563eb; }
+  #zam-send { background: #2563eb; color: #fff; border: none; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; font-size: 16px; }
+  #zam-window.zam-hidden { display: none !important; }
+</style>
+
+<script>
+(function () {
+  const WEBHOOK_URL = "https://n8n.baern8n.ru/webhook/zamorozka-chat";
+  const toggle = document.getElementById("zam-toggle");
+  const win = document.getElementById("zam-window");
+  const close = document.getElementById("zam-close");
+  const messages = document.getElementById("zam-messages");
+  const input = document.getElementById("zam-input");
+  const send = document.getElementById("zam-send");
+  let history = [];
+  let greeted = false;
+
+  toggle.onclick = () => {
+    win.classList.toggle("zam-hidden");
+    if (!win.classList.contains("zam-hidden") && !greeted) {
+      addMsg("bot", "Здравствуйте! 🥟 Я помогу с меню, ценами и доставкой ЗаморозЪки. Что подсказать?");
+      greeted = true;
+    }
+  };
+  close.onclick = () => win.classList.add("zam-hidden");
+
+  function addMsg(who, text) {
+    const div = document.createElement("div");
+    div.className = "zam-msg " + (who === "user" ? "zam-user" : "zam-bot");
+    div.textContent = text;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    return div;
+  }
+
+  async function sendMessage() {
+    const text = input.value.trim();
+    if (!text) return;
+    addMsg("user", text);
+    input.value = "";
+    const loading = addMsg("bot", "печатает…");
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, history: history })
+      });
+      const data = await res.json();
+      const reply = data.reply || "Извините, не получилось ответить. Попробуйте ещё раз 🙏";
+      loading.textContent = reply;
+      history.push({ role: "user", content: text });
+      history.push({ role: "assistant", content: reply });
+    } catch (err) {
+      loading.textContent = "Ошибка связи. Напишите нам в Telegram @zamorozka_spb";
+      console.error("Widget error:", err);
+    }
+  }
+
+  send.onclick = sendMessage;
+  input.addEventListener("keydown", (e) => { if (e.key === "Enter") sendMessage(); });
+})();
+</script>
+<!-- ===== /AI ЧАТ-ВИДЖЕТ ===== -->
+
+<script>
+(function () {
+  const tg = window.Telegram?.WebApp;
+  const isTelegram = Boolean(tg?.initData);
+
+  if (isTelegram) {
+    tg.ready();
+    tg.expand();
+    document.body.classList.add('in-telegram');
+    console.log('Mini App запущен в Telegram', tg.initDataUnsafe?.user);
+
+    // Настраиваем MainButton
+    tg.MainButton.setText('🛒 Оформить заказ');
+    tg.MainButton.color = '#E07044';
+    tg.MainButton.textColor = '#FFFFFF';
+
+    // Следим за корзиной и показываем/скрываем MainButton
+    function updateMainButton() {
+      const cart = JSON.parse(localStorage.getItem('zamorozka_cart') || '[]');
+      const totalItems = cart.reduce(function(sum, item) { return sum + (item.quantity || 1); }, 0);
+
+      if (totalItems > 0) {
+        tg.MainButton.setText('🛒 Оформить заказ (' + totalItems + ' шт.)');
+        tg.MainButton.show();
+      } else {
+        tg.MainButton.hide();
+      }
+    }
+
+    // Проверяем при загрузке и при изменении localStorage
+    updateMainButton();
+    window.addEventListener('storage', updateMainButton);
+
+    // При клике на MainButton — переходим на order.html
+    tg.MainButton.onClick(function() {
+      window.location.href = '/order.html';
+    });
+
+  } else {
+    console.log('Открыто как обычный сайт (вне Telegram)');
+  }
+
+  window.IS_TELEGRAM = isTelegram;
+
+  // Глобальная функция для вызова из кода корзины
+  window.updateTelegramMainButton = function() {
+    if (isTelegram) {
+      const cart = JSON.parse(localStorage.getItem('zamorozka_cart') || '[]');
+      const totalItems = cart.reduce(function(sum, item) { return sum + (item.quantity || 1); }, 0);
+      if (totalItems > 0) {
+        tg.MainButton.setText('🛒 Оформить заказ (' + totalItems + ' шт.)');
+        tg.MainButton.show();
+      } else {
+        tg.MainButton.hide();
+      }
+    }
+  };
+})();
+</script>
+
+</body>
+</html>

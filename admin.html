@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ЗаморозЪка — Заказы</title>
+
+  <!-- Google Fonts: Amatic SC (display) + Cabin (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Cabin:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['"Amatic SC"', 'cursive'],
+            body:    ['Cabin', 'sans-serif'],
+          },
+          colors: {
+            cream: { 50:'#FEFCF8', 100:'#FAF7F0', 200:'#F5EDD8', 300:'#EDE0C4', 400:'#D4B896' },
+            terra: { 300:'#E8845C', 400:'#E07044', 500:'#C85E32', 600:'#A84D28', 700:'#8B3D1E' },
+            bark:  { 100:'#D4B896', 200:'#BA9A82', 300:'#9A7A62', 400:'#7A5A42', 500:'#5C3D28', 600:'#3D2B1F' },
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      font-family: 'Cabin', sans-serif;
+      background-color: #FAF7F0;
+      color: #3D2B1F;
+      min-height: 100vh;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+    }
+
+    /* ── Shadows ── */
+    .shadow-warm    { box-shadow: 0 4px 16px rgba(200,94,50,.12), 0 1px 4px rgba(61,43,31,.07); }
+    .shadow-warm-md { box-shadow: 0 8px 32px rgba(200,94,50,.16), 0 2px 8px rgba(61,43,31,.09); }
+    .shadow-warm-lg { box-shadow: 0 12px 48px rgba(200,94,50,.22), 0 4px 16px rgba(61,43,31,.12); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: #C85E32; color: #FEFCF8;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      cursor: pointer;
+    }
+    .btn-primary:hover  { background: #A84D28; }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-primary:focus-visible { outline: 3px solid #C85E32; outline-offset: 3px; }
+
+    /* ── Form fields ── */
+    .form-field {
+      width: 100%; background: #FEFCF8;
+      border: 1.5px solid #D4B896; border-radius: 12px;
+      padding: 14px 16px; font-family: 'Cabin', sans-serif;
+      font-size: 16px; color: #3D2B1F;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+    }
+    .form-field::placeholder { color: #BA9A82; }
+    .form-field:focus {
+      outline: none; border-color: #C85E32;
+      box-shadow: 0 0 0 3px rgba(200,94,50,.12);
+    }
+
+    /* ── Focus ring ── */
+    a:focus-visible, button:focus-visible {
+      outline: 3px solid #C85E32; outline-offset: 2px; border-radius: 6px;
+    }
+
+    /* ── Decorative divider ── */
+    .squiggle {
+      width: 56px; height: 4px;
+      background: linear-gradient(90deg, #C85E32, #EDE0C4);
+      border-radius: 2px; margin: 0 auto;
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #F5EDD8; }
+    ::-webkit-scrollbar-thumb { background: #C85E32; border-radius: 4px; }
+
+    /* ── Status pill ── */
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 11px; border-radius: 9999px;
+      font-size: 12px; font-weight: 700; white-space: nowrap;
+      border: 1.5px solid transparent;
+    }
+    .status-pill .dot { width: 7px; height: 7px; border-radius: 9999px; background: currentColor; flex-shrink: 0; }
+
+    /* status colors */
+    .st-new        { color:#1D5FB0; background:#E4EEFB; border-color:#BBD4F2; }
+    .st-confirmed  { color:#1F8A4C; background:#E3F5EA; border-color:#B7E3C7; }
+    .st-cooking    { color:#C85E32; background:#FBEAE0; border-color:#F2C9B2; }
+    .st-delivering { color:#6B3FA0; background:#EEE6F8; border-color:#D5C2EC; }
+    .st-delivered  { color:#14663B; background:#DCEFE3; border-color:#A9D9BC; }
+    .st-cancelled  { color:#B3261E; background:#FBE4E2; border-color:#F2BEB9; }
+
+    /* ── Counter cards ── */
+    .counter-card {
+      background: #FEFCF8; border: 1.5px solid #EDE0C4; border-radius: 16px;
+      padding: 16px 18px; cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .counter-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(200,94,50,.14); }
+    .counter-card.active { border-color: #C85E32; box-shadow: 0 8px 24px rgba(200,94,50,.18); }
+
+    /* ── Filter tabs ── */
+    .tab-btn {
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+      cursor: pointer; white-space: nowrap;
+      border: 1.5px solid #EDE0C4; background: #FEFCF8; color: #5C3D28;
+    }
+    .tab-btn:hover { border-color: #D4B896; }
+    .tab-btn.active { background: #C85E32 !important; color: #FEFCF8 !important; border-color: #C85E32 !important; }
+
+    /* ── Table ── */
+    .orders-table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1180px; }
+    .orders-table thead th {
+      position: sticky; top: 0; z-index: 2;
+      background: #EDE0C4; color: #5C3D28;
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+      text-align: left; padding: 13px 14px; white-space: nowrap;
+    }
+    .orders-table thead th:first-child { border-top-left-radius: 14px; }
+    .orders-table thead th:last-child  { border-top-right-radius: 14px; }
+    .orders-table tbody td {
+      padding: 13px 14px; font-size: 14px; vertical-align: top;
+      border-bottom: 1px solid #F0E6D2;
+    }
+    .orders-table tbody tr { transition: background-color 0.15s ease; }
+    .orders-table tbody tr:hover { background: #FAF4E8; }
+    .orders-table tbody tr:last-child td:first-child { border-bottom-left-radius: 14px; }
+    .orders-table tbody tr:last-child td:last-child  { border-bottom-right-radius: 14px; }
+
+    /* ── Action buttons ── */
+    .act-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 5px 10px; border-radius: 8px;
+      font-size: 12px; font-weight: 600; white-space: nowrap;
+      border: 1.5px solid; background: transparent; cursor: pointer;
+      transition: background-color 0.18s ease, color 0.18s ease, opacity 0.18s ease;
+    }
+    .act-btn:active { transform: scale(0.96); }
+    .act-confirm  { color:#1F8A4C; border-color:#1F8A4C; }
+    .act-confirm:hover  { background:#1F8A4C; color:#fff; }
+    .act-cook     { color:#C85E32; border-color:#C85E32; }
+    .act-cook:hover     { background:#C85E32; color:#fff; }
+    .act-deliver  { color:#6B3FA0; border-color:#6B3FA0; }
+    .act-deliver:hover  { background:#6B3FA0; color:#fff; }
+    .act-done     { color:#14663B; border-color:#14663B; }
+    .act-done:hover     { background:#14663B; color:#fff; }
+    .act-cancel   { color:#B3261E; border-color:#B3261E; }
+    .act-cancel:hover   { background:#B3261E; color:#fff; }
+    .act-btn:disabled { opacity: .35; cursor: not-allowed; }
+    .act-btn:disabled:hover { background: transparent; color: inherit; }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2.5px solid rgba(254,252,248,.4); border-top-color: #FEFCF8;
+      animation: spin 0.7s linear infinite;
+    }
+    .spinner-terra { border-color: rgba(200,94,50,.25); border-top-color: #C85E32; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: #3D2B1F; color: #F5EDD8;
+      padding: 12px 22px; border-radius: 12px;
+      font-size: 14px; font-weight: 600; z-index: 100;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      opacity: 0; box-shadow: 0 8px 24px rgba(61,43,31,.3);
+      pointer-events: none; max-width: 90vw;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.err { background: #B3261E; color: #FBE4E2; }
+
+    /* ── Pulse on refresh dot ── */
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #1F8A4C; box-shadow: 0 0 0 0 rgba(31,138,76,.5); animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(31,138,76,.5); }
+      70%  { box-shadow: 0 0 0 7px rgba(31,138,76,0); }
+      100% { box-shadow: 0 0 0 0 rgba(31,138,76,0); }
+    }
+
+    .cell-compose { max-width: 240px; white-space: pre-line; font-size: 13px; line-height: 1.45; color: #5C3D28; }
+    .cell-address { max-width: 200px; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════
+     ЭКРАН АВТОРИЗАЦИИ
+════════════════════════════════════════════ -->
+<div id="login-screen" class="fixed inset-0 z-50 flex items-center justify-center px-4"
+     style="background: radial-gradient(circle at 30% 20%, #FAF7F0 0%, #EDE0C4 100%);">
+  <div class="w-full max-w-sm bg-cream-50 rounded-3xl shadow-warm-lg p-8 sm:p-10">
+
+    <!-- Логотип -->
+    <div class="flex flex-col items-center text-center mb-7">
+      <svg class="w-12 h-12 text-terra-500 mb-3" viewBox="0 0 32 32" fill="none"
+           xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <ellipse cx="16" cy="15" rx="11" ry="7" fill="currentColor" opacity="0.15"/>
+        <path d="M5 15C5 9.48 10.03 5 16 5C21.97 5 27 9.48 27 15C27 18.8 24.5 22.1 20.8 23.6L22 28L17.2 25.5C16.8 25.65 16.4 25.73 16 25.73C10.03 25.73 5 21.25 5 15Z"
+              fill="currentColor" opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M10 13.5C11 11.5 13.2 10.3 16 10.3C18.8 10.3 21 11.5 22 13.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M10 16.5C11.5 18.5 13.5 19.5 16 19.5C18.5 19.5 20.5 18.5 22 16.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <h1 class="font-display text-5xl font-bold text-terra-500 leading-none">ЗаморозЪка</h1>
+      <p class="text-bark-300 text-sm font-semibold mt-1 uppercase tracking-widest">Панель заказов</p>
+    </div>
+
+    <div class="squiggle mb-7"></div>
+
+    <form id="login-form" novalidate>
+      <label for="password-input" class="block text-sm font-semibold text-bark-500 mb-2">Пароль</label>
+      <input id="password-input" type="password" class="form-field" placeholder="Введите пароль"
+             autocomplete="current-password" required>
+
+      <div id="login-error" class="hidden items-start gap-2 mt-3 text-sm font-semibold text-terra-700">
+        <svg class="w-4 h-4 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span>Неверный пароль. Попробуйте ещё раз.</span>
+      </div>
+
+      <button type="submit"
+              class="btn-primary w-full mt-6 py-3.5 rounded-xl text-base font-bold shadow-warm-md">
+        Войти
+      </button>
+    </form>
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════
+     DASHBOARD
+════════════════════════════════════════════ -->
+<div id="dashboard" class="hidden">
+
+  <!-- Шапка -->
+  <header class="sticky top-0 z-30 border-b border-cream-300"
+          style="background: rgba(250,247,240,.97); backdrop-filter: blur(8px);">
+    <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16 gap-4">
+
+        <div class="flex items-center gap-2.5 min-w-0">
+          <svg class="w-8 h-8 text-terra-500 shrink-0" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <ellipse cx="16" cy="15" rx="11" ry="7" fill="currentColor" opacity="0.15"/>
+            <path d="M5 15C5 9.48 10.03 5 16 5C21.97 5 27 9.48 27 15C27 18.8 24.5 22.1 20.8 23.6L22 28L17.2 25.5C16.8 25.65 16.4 25.73 16 25.73C10.03 25.73 5 21.25 5 15Z" fill="currentColor" opacity="0.18" stroke="currentColor" stroke-width="1.2"/>
+          </svg>
+          <h1 class="font-display text-3xl font-bold text-terra-500 leading-none truncate">
+            ЗаморозЪка <span class="text-bark-400 font-normal">— Заказы</span>
+          </h1>
+        </div>
+
+        <div class="flex items-center gap-3 sm:gap-4 shrink-0">
+          <!-- Авто-обновление -->
+          <div class="hidden sm:flex items-center gap-2 text-xs font-semibold text-bark-400">
+            <span class="live-dot" aria-hidden="true"></span>
+            <span>Обновлено <span id="last-update">—</span></span>
+          </div>
+
+          <button id="refresh-btn" aria-label="Обновить сейчас"
+                  class="flex items-center justify-center w-10 h-10 rounded-xl text-bark-500 hover:text-terra-500 hover:bg-cream-300 transition-colors duration-200 cursor-pointer">
+            <svg id="refresh-icon" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M23 4v6h-6M1 20v-6h6"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+          </button>
+
+          <button id="logout-btn"
+                  class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-sm font-semibold text-bark-500 border-1.5 border-cream-300 hover:text-terra-600 hover:border-terra-300 hover:bg-cream-200 transition-colors duration-200 cursor-pointer"
+                  style="border:1.5px solid #EDE0C4;">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span class="hidden sm:inline">Выйти</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+
+    <!-- Счётчики -->
+    <div id="counters" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 mb-7">
+      <!-- заполняется JS -->
+    </div>
+
+    <!-- Фильтр-табы -->
+    <div class="flex items-center justify-between gap-3 mb-5 flex-wrap">
+      <div id="filter-tabs" class="flex gap-2 overflow-x-auto pb-1 -mb-1" role="tablist" aria-label="Фильтр по статусу">
+        <!-- заполняется JS -->
+      </div>
+      <div class="text-sm text-bark-300 font-semibold shrink-0">
+        Всего: <span id="visible-count" class="text-bark-500">0</span>
+      </div>
+    </div>
+
+    <!-- Таблица -->
+    <div class="bg-cream-50 rounded-2xl shadow-warm overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>№</th>
+              <th>Дата</th>
+              <th>Имя</th>
+              <th>Телефон</th>
+              <th>Адрес</th>
+              <th>Состав</th>
+              <th>Итого</th>
+              <th>Формат</th>
+              <th>Доставка</th>
+              <th>Время</th>
+              <th>Статус</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody id="orders-body">
+            <!-- заполняется JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Состояния -->
+      <div id="state-loading" class="hidden flex flex-col items-center justify-center gap-3 py-16 text-bark-300">
+        <div class="spinner spinner-terra"></div>
+        <p class="text-sm font-semibold">Загружаем заказы…</p>
+      </div>
+
+      <div id="state-empty" class="hidden flex flex-col items-center justify-center gap-3 py-16 text-center px-6">
+        <svg class="w-12 h-12 text-cream-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/>
+        </svg>
+        <p class="font-display text-3xl font-bold text-bark-400">Заказов пока нет</p>
+        <p class="text-sm text-bark-300">Здесь появятся новые заказы по мере поступления.</p>
+      </div>
+
+      <div id="state-error" class="hidden flex flex-col items-center justify-center gap-3 py-16 text-center px-6">
+        <svg class="w-12 h-12 text-terra-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <p class="font-display text-3xl font-bold text-terra-600">Не удалось загрузить</p>
+        <p id="error-detail" class="text-sm text-bark-300">Проверьте соединение и попробуйте ещё раз.</p>
+        <button id="retry-btn" class="btn-primary mt-1 px-5 py-2.5 rounded-xl text-sm font-bold">Повторить</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Toast -->
+<div id="toast" role="status" aria-live="polite"></div>
+
+
+<script>
+"use strict";
+
+/* ───────────────────────── Конфигурация ───────────────────────── */
+const PASSWORD     = 'zamorozka2026';
+const ADMIN_TOKEN  = 'zamorozka2026';
+const SESSION_KEY  = 'zamorozka_admin_auth';
+const API_ORDERS   = 'https://plemennaya-spb.ru/api.php?action=orders';
+const API_UPDATE   = 'https://plemennaya-spb.ru/api.php?action=update_status';
+const REFRESH_MS   = 30000;
+
+/* Статусы: ключ → { подпись, css-класс пилюли } */
+const STATUSES = {
+  new:        { label: 'Новый',     cls: 'st-new' },
+  confirmed:  { label: 'Принят',    cls: 'st-confirmed' },
+  cooking:    { label: 'Готовится', cls: 'st-cooking' },
+  delivering: { label: 'Везём',     cls: 'st-delivering' },
+  delivered:  { label: 'Доставлен', cls: 'st-delivered' },
+  cancelled:  { label: 'Отменён',   cls: 'st-cancelled' },
+};
+const STATUS_ORDER = ['new', 'confirmed', 'cooking', 'delivering', 'delivered', 'cancelled'];
+
+/* Кнопки действий: целевой статус → подпись + css */
+const ACTIONS = [
+  { to: 'confirmed',  label: 'Принять',   cls: 'act-confirm' },
+  { to: 'cooking',    label: 'Готовим',   cls: 'act-cook' },
+  { to: 'delivering', label: 'Везём',     cls: 'act-deliver' },
+  { to: 'delivered',  label: 'Доставлен', cls: 'act-done' },
+  { to: 'cancelled',  label: 'Отменить',  cls: 'act-cancel' },
+];
+
+/* ───────────────────────── Состояние ───────────────────────── */
+let allOrders   = [];
+let activeFilter = 'all';
+let refreshTimer = null;
+let isLoading   = false;
+
+/* ───────────────────────── Утилиты ───────────────────────── */
+const $ = (sel) => document.querySelector(sel);
+
+function escapeHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+function formatMoney(v) {
+  const n = Number(v);
+  if (!isFinite(n) || v === null || v === undefined || v === '') return '—';
+  return n.toLocaleString('ru-RU') + ' ₽';
+}
+
+function formatDateTime(raw) {
+  if (!raw) return '—';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return escapeHtml(raw);
+  return d.toLocaleString('ru-RU', { day:'2-digit', month:'2-digit', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function formatDeliveryDate(raw) {
+  if (!raw) return '—';
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return escapeHtml(raw);
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+function nowTime() {
+  return new Date().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+}
+
+/* Нормализация заказа: терпимо к разным именам полей с бэкенда */
+function pick(obj, keys, fallback = '') {
+  for (const k of keys) {
+    if (obj[k] !== undefined && obj[k] !== null && obj[k] !== '') return obj[k];
+  }
+  return fallback;
+}
+
+function normalizeOrder(o) {
+  let status = String(pick(o, ['status', 'state'], 'new')).toLowerCase().trim();
+  if (!STATUSES[status]) status = 'new';
+  return {
+    id:            pick(o, ['id', 'order_id', 'number', '№'], ''),
+    created:       pick(o, ['created_at', 'created', 'date', 'datetime', 'timestamp'], ''),
+    name:          pick(o, ['name', 'customer', 'client_name', 'fio'], ''),
+    phone:         pick(o, ['phone', 'tel', 'telephone'], ''),
+    address:       pick(o, ['address', 'addr', 'delivery_address'], ''),
+    items:         pick(o, ['items', 'composition', 'cart', 'products', 'order_items'], ''),
+    total:         pick(o, ['total', 'sum', 'amount', 'price'], ''),
+    format:        pick(o, ['format', 'delivery_format', 'type'], ''),
+    delivery_date: pick(o, ['delivery_date', 'date_delivery', 'deliveryDate'], ''),
+    delivery_time: pick(o, ['delivery_time', 'time', 'slot', 'time_slot'], ''),
+    comment:       pick(o, ['comment', 'note', 'notes'], ''),
+    status,
+  };
+}
+
+/* ───────────────────────── Toast ───────────────────────── */
+let toastTimer = null;
+function toast(msg, isError = false) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.classList.toggle('err', isError);
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+/* ───────────────────────── Авторизация ───────────────────────── */
+function isAuthed() {
+  return sessionStorage.getItem(SESSION_KEY) === ADMIN_TOKEN;
+}
+
+function showDashboard() {
+  $('#login-screen').classList.add('hidden');
+  $('#dashboard').classList.remove('hidden');
+  startAutoRefresh();
+  loadOrders();
+}
+
+function showLogin() {
+  stopAutoRefresh();
+  $('#dashboard').classList.add('hidden');
+  $('#login-screen').classList.remove('hidden');
+  $('#password-input').value = '';
+  setTimeout(() => $('#password-input').focus(), 50);
+}
+
+$('#login-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const val = $('#password-input').value;
+  const errBox = $('#login-error');
+  if (val === PASSWORD) {
+    sessionStorage.setItem(SESSION_KEY, ADMIN_TOKEN);
+    errBox.classList.add('hidden');
+    errBox.classList.remove('flex');
+    showDashboard();
+  } else {
+    errBox.classList.remove('hidden');
+    errBox.classList.add('flex');
+    $('#password-input').value = '';
+    $('#password-input').focus();
+  }
+});
+
+$('#logout-btn').addEventListener('click', () => {
+  sessionStorage.removeItem(SESSION_KEY);
+  showLogin();
+});
+
+/* ───────────────────────── Авто-обновление ───────────────────────── */
+function startAutoRefresh() {
+  stopAutoRefresh();
+  refreshTimer = setInterval(() => { if (!document.hidden) loadOrders(true); }, REFRESH_MS);
+}
+function stopAutoRefresh() {
+  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+}
+
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && isAuthed()) loadOrders(true);
+});
+
+$('#refresh-btn').addEventListener('click', () => loadOrders());
+$('#retry-btn').addEventListener('click', () => loadOrders());
+
+/* ───────────────────────── Загрузка заказов ───────────────────────── */
+function setRefreshSpinning(on) {
+  const icon = $('#refresh-icon');
+  icon.style.transition = on ? 'transform 0.7s linear' : '';
+  icon.style.animation  = on ? 'spin 0.7s linear infinite' : '';
+}
+
+function showTableState(state) {
+  // state: 'loading' | 'empty' | 'error' | 'data'
+  $('#state-loading').classList.toggle('hidden', state !== 'loading');
+  $('#state-loading').classList.toggle('flex',  state === 'loading');
+  $('#state-empty').classList.toggle('hidden',  state !== 'empty');
+  $('#state-empty').classList.toggle('flex',     state === 'empty');
+  $('#state-error').classList.toggle('hidden',   state !== 'error');
+  $('#state-error').classList.toggle('flex',      state === 'error');
+  $('#orders-body').closest('.overflow-x-auto').style.display = (state === 'data') ? '' : 'none';
+}
+
+async function loadOrders(silent = false) {
+  if (isLoading) return;
+  isLoading = true;
+  setRefreshSpinning(true);
+  if (!silent && allOrders.length === 0) showTableState('loading');
+
+  try {
+    const res = await fetch(API_ORDERS, {
+      method: 'GET',
+      headers: { 'X-Admin-Token': ADMIN_TOKEN, 'Accept': 'application/json' },
+      cache: 'no-store',
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    const data = await res.json();
+    let list = Array.isArray(data) ? data
+             : Array.isArray(data.orders) ? data.orders
+             : Array.isArray(data.data)   ? data.data
+             : [];
+
+    allOrders = list.map(normalizeOrder);
+    $('#last-update').textContent = nowTime();
+    render();
+  } catch (err) {
+    if (allOrders.length === 0) {
+      $('#error-detail').textContent =
+        err.message && err.message.startsWith('HTTP')
+          ? `Сервер вернул ошибку (${err.message}).`
+          : 'Проверьте соединение и попробуйте ещё раз.';
+      showTableState('error');
+    } else if (!silent) {
+      toast('Не удалось обновить заказы', true);
+    }
+  } finally {
+    isLoading = false;
+    setRefreshSpinning(false);
+  }
+}
+
+/* ───────────────────────── Отрисовка ───────────────────────── */
+function computeCounts() {
+  const counts = { all: allOrders.length };
+  STATUS_ORDER.forEach(s => counts[s] = 0);
+  allOrders.forEach(o => { counts[o.status] = (counts[o.status] || 0) + 1; });
+  return counts;
+}
+
+function renderCounters() {
+  const counts = computeCounts();
+  const wrap = $('#counters');
+  wrap.innerHTML = STATUS_ORDER.map(s => {
+    const st = STATUSES[s];
+    const active = activeFilter === s ? 'active' : '';
+    return `
+      <button class="counter-card ${active}" data-filter="${s}" type="button">
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="status-pill ${st.cls}" style="padding:2px 8px;"><span class="dot"></span>${st.label}</span>
+        </div>
+        <div class="font-display font-bold text-4xl leading-none text-bark-600">${counts[s] || 0}</div>
+      </button>`;
+  }).join('');
+
+  wrap.querySelectorAll('.counter-card').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter;
+      activeFilter = (activeFilter === f) ? 'all' : f;
+      render();
+    });
+  });
+}
+
+function renderTabs() {
+  const counts = computeCounts();
+  const tabs = [{ key: 'all', label: 'Все' }].concat(STATUS_ORDER.map(s => ({ key: s, label: STATUSES[s].label })));
+  const wrap = $('#filter-tabs');
+  wrap.innerHTML = tabs.map(t => {
+    const active = activeFilter === t.key ? 'active' : '';
+    const cnt = counts[t.key] || 0;
+    return `<button class="tab-btn ${active} px-4 py-2 rounded-full text-sm font-semibold shrink-0"
+              role="tab" aria-selected="${activeFilter === t.key}" data-filter="${t.key}" type="button">
+              ${t.label} <span class="opacity-60">${cnt}</span>
+            </button>`;
+  }).join('');
+
+  wrap.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => { activeFilter = btn.dataset.filter; render(); });
+  });
+}
+
+function statusPill(status) {
+  const st = STATUSES[status] || STATUSES.new;
+  return `<span class="status-pill ${st.cls}"><span class="dot"></span>${st.label}</span>`;
+}
+
+function actionButtons(o) {
+  return ACTIONS.map(a => {
+    const disabled = (o.status === a.to) ? 'disabled' : '';
+    return `<button class="act-btn ${a.cls}" data-id="${escapeHtml(o.id)}" data-to="${a.to}" type="button" ${disabled}>${a.label}</button>`;
+  }).join('');
+}
+
+function renderTable() {
+  const body = $('#orders-body');
+  const visible = activeFilter === 'all'
+    ? allOrders
+    : allOrders.filter(o => o.status === activeFilter);
+
+  $('#visible-count').textContent = visible.length;
+
+  if (allOrders.length === 0) { showTableState('empty'); body.innerHTML = ''; return; }
+
+  if (visible.length === 0) {
+    showTableState('data');
+    body.innerHTML = `<tr><td colspan="12" class="text-center py-12 text-bark-300 font-semibold">
+      Нет заказов со статусом «${STATUSES[activeFilter]?.label || ''}»</td></tr>`;
+    return;
+  }
+
+  showTableState('data');
+  body.innerHTML = visible.map(o => `
+    <tr data-row-id="${escapeHtml(o.id)}">
+      <td class="font-bold text-terra-600">#${escapeHtml(o.id || '—')}</td>
+      <td class="text-bark-400 whitespace-nowrap">${formatDateTime(o.created)}</td>
+      <td class="font-semibold text-bark-600 whitespace-nowrap">${escapeHtml(o.name) || '—'}</td>
+      <td class="whitespace-nowrap">
+        ${o.phone ? `<a href="tel:${escapeHtml(String(o.phone).replace(/[^\d+]/g,''))}" class="text-terra-600 font-semibold hover:underline">${escapeHtml(o.phone)}</a>` : '—'}
+      </td>
+      <td class="cell-address text-bark-500">${escapeHtml(o.address) || '—'}</td>
+      <td><div class="cell-compose">${escapeHtml(o.items) || '—'}</div></td>
+      <td class="font-bold text-bark-600 whitespace-nowrap">${formatMoney(o.total)}</td>
+      <td class="text-bark-500 whitespace-nowrap">${escapeHtml(o.format) || '—'}</td>
+      <td class="text-bark-500 whitespace-nowrap">${formatDeliveryDate(o.delivery_date)}</td>
+      <td class="text-bark-500 whitespace-nowrap">${escapeHtml(o.delivery_time) || '—'}</td>
+      <td>${statusPill(o.status)}</td>
+      <td>
+        <div class="flex flex-wrap gap-1.5" style="max-width:340px;">${actionButtons(o)}</div>
+      </td>
+    </tr>
+  `).join('');
+
+  body.querySelectorAll('.act-btn').forEach(btn => {
+    btn.addEventListener('click', () => updateStatus(btn.dataset.id, btn.dataset.to, btn));
+  });
+}
+
+function render() {
+  renderCounters();
+  renderTabs();
+  renderTable();
+}
+
+/* ───────────────────────── Обновление статуса ───────────────────────── */
+async function updateStatus(id, status, btn) {
+  if (status === 'cancelled') {
+    if (!confirm(`Отменить заказ #${id}?`)) return;
+  }
+
+  const row = document.querySelector(`tr[data-row-id="${CSS.escape(String(id))}"]`);
+  const btns = row ? row.querySelectorAll('.act-btn') : [];
+  btns.forEach(b => b.disabled = true);
+  const originalHtml = btn.innerHTML;
+  btn.innerHTML = '…';
+
+  try {
+    const res = await fetch(API_UPDATE, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Token': ADMIN_TOKEN, 'Accept': 'application/json' },
+      body: JSON.stringify({ id, status }),
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+
+    // Оптимистично обновляем локально
+    const ord = allOrders.find(o => String(o.id) === String(id));
+    if (ord) ord.status = status;
+    toast(`Заказ #${id} → «${STATUSES[status].label}»`);
+    render();
+  } catch (err) {
+    btn.innerHTML = originalHtml;
+    btns.forEach(b => b.disabled = false);
+    toast(`Ошибка обновления #${id}`, true);
+  }
+}
+
+/* ───────────────────────── Старт ───────────────────────── */
+if (isAuthed()) { showDashboard(); } else { showLogin(); }
+</script>
+</body>
+</html>
