@@ -773,6 +773,22 @@
         { name: "Пекинская капуста",             price: 950 },
       ],
     },
+    {
+      category: "Чебуреки",
+      unit: "шт",
+      minQty: 6,
+      photo: "",
+      fillings: [
+        { name: "Свинина",                price: 110 },
+        { name: "Говядина",               price: 110 },
+        { name: "Свинина-говядина",       price: 110 },
+        { name: "Свинина-курица",         price: 110 },
+        { name: "Курица",                 price: 110 },
+        { name: "Курица-говядина",        price: 110 },
+        { name: "Индейка",                price: 110 },
+        { name: "Картофель-лук-сулугуни", price: 110 },
+      ],
+    },
   ];
 
   /* Общие добавки категории (+цена за ту же единицу) */
@@ -1100,7 +1116,7 @@
                 <div class="text-xs font-semibold uppercase tracking-widest text-bark-300 mb-1.5">Количество, ${cat.unit}</div>
                 <div class="flex items-center gap-2">
                   <button type="button" data-step="-1" aria-label="Уменьшить количество" class="pf-step">−</button>
-                  <span data-qty-out aria-live="polite" class="w-12 text-center font-bold text-xl text-bark-600">1</span>
+                  <span data-qty-out aria-live="polite" class="w-12 text-center font-bold text-xl text-bark-600">${cat.minQty || 1}</span>
                   <button type="button" data-step="1" aria-label="Увеличить количество" class="pf-step">+</button>
                 </div>
               </div>
@@ -1116,13 +1132,16 @@
       </div>`;
   }
 
-  /* Имя позиции для корзины: «Пельмени «Свинина-говядина» + Зелень, Масло» */
+  /* Имя позиции для корзины: «Пельмени «Свинина-говядина» + Зелень, Масло · кг».
+     Единицу (кг/шт) добавляем в конец имени — чтобы в сайдбаре читалось «… × N кг/шт»
+     (renderCart показывает только «цена × qty», его логику не трогаем). */
   function composeItemName(cat, fillingIdx, addonSet) {
     let name = `${cat.category} «${cat.fillings[fillingIdx].name}»`;
     if (addonSet.size) {
       const list = [...addonSet].sort((a, b) => a - b).map(i => addons[i].name).join(', ');
       name += ` + ${list}`;
     }
+    name += ` · ${cat.unit}`;
     return name;
   }
 
@@ -1142,7 +1161,8 @@
 
     let selFilling = 0;
     const selAddons = new Set();
-    let qty = 1;
+    const minQty = cat.minQty || 1;   // поштучные категории (Чебуреки) стартуют с minQty и не опускаются ниже
+    let qty = minQty;
 
     const priceOut = mount.querySelector('[data-price-out]');
     const qtyOut   = mount.querySelector('[data-qty-out]');
@@ -1178,7 +1198,7 @@
 
     mount.querySelectorAll('[data-step]').forEach(btn => {
       btn.addEventListener('click', () => {
-        qty = Math.max(1, qty + Number(btn.dataset.step));
+        qty = Math.max(minQty, qty + Number(btn.dataset.step));
         refresh();
       });
     });
@@ -1196,6 +1216,7 @@
     "Блины": "blini", "Сырники": "syrniki", "Шницель": "shnitsel",
     "Перец фаршированный": "perets", "Котлеты": "kotlety",
     "Тефтели с рисом": "tefteli", "Фрикадельки": "frikadelki", "Голубцы": "golubtsy",
+    "Чебуреки": "cheburek",
   };
   const slugOf = cat => CATEGORY_SLUGS[cat.category]
     || cat.category.toLowerCase().replace(/[^a-zа-яё0-9]+/gi, '-').replace(/(^-|-$)/g, '');
