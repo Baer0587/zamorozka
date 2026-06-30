@@ -310,13 +310,43 @@
 <script>
   const CART_KEY = 'zamorozka_cart';
 
-  /* ── Читаем корзину ── */
-  let cartItems = [];
-  try {
-    const raw = localStorage.getItem(CART_KEY);
-    if (raw) cartItems = JSON.parse(raw);
-    if (!Array.isArray(cartItems)) cartItems = [];
-  } catch { cartItems = []; }
+  /* ── Читаем корзину (та же миграция, что в menu.html/index.html) ── */
+  /* minQty позиции: поштучные Чебуреки не опускаются ниже 6, весовые — ниже 1. */
+  function itemMinQty(unit, category) {
+    return (unit === 'шт' && category === 'Чебуреки') ? 6 : 1;
+  }
+  /* Старый формат {name, price, qty} достраиваем до структурного
+     {id, title, category, filling, addons, unit, price, qty, minQty} —
+     чтобы у всех позиций гарантированно были title/unit и старые корзины не падали. */
+  function normalizeItem(it) {
+    if (it && it.id && it.unit) {                     // уже новый формат
+      if (it.minQty == null) it.minQty = itemMinQty(it.unit, it.category);
+      return it;
+    }
+    const name = String((it && it.name) || '');
+    const m = name.match(/ · (кг|шт)$/);              // единицу старый формат писал в хвост name
+    const unit = m ? m[1] : 'кг';                     // по умолчанию — кг
+    const title = m ? name.slice(0, m.index) : name;  // title = name без хвоста единицы
+    const category = (it && it.category) || '';
+    return {
+      id: name || title,                              // старый ключ дедупликации стабилен
+      title,
+      category,
+      filling: (it && it.filling) || '',
+      addons: Array.isArray(it && it.addons) ? it.addons : [],
+      unit,
+      price: Number(it && it.price) || 0,
+      qty: Number(it && it.qty) || 0,
+      minQty: itemMinQty(unit, category),
+    };
+  }
+  function loadCart() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      return Array.isArray(raw) ? raw.map(normalizeItem) : [];
+    } catch { return []; }
+  }
+  let cartItems = loadCart();
 
   /* ── Рендер состава ── */
   function formatPrice(p) {
@@ -342,8 +372,8 @@
     list.innerHTML = cartItems.map(item => `
       <div class="py-3 flex justify-between items-start gap-3">
         <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm leading-snug" style="color:#3D2B1F;">${item.name}</div>
-          <div class="text-xs mt-0.5" style="color:#9A7A62;">${formatPrice(item.price)} × ${item.qty} шт.</div>
+          <div class="font-semibold text-sm leading-snug" style="color:#3D2B1F;">${item.title}</div>
+          <div class="text-xs mt-0.5" style="color:#9A7A62;">${formatPrice(item.price)} × ${item.qty} ${item.unit}</div>
         </div>
         <div class="font-bold text-sm shrink-0" style="color:#C85E32;">${formatPrice(item.price * item.qty)}</div>
       </div>`).join('');
@@ -414,7 +444,11 @@
           delivery_date: date,
           delivery_time: slot,
           comment,
-          items: cartItems.map(i => `${i.name} × ${i.qty} шт. = ${i.price * i.qty} ₽`).join('\n'),
+          items: cartItems.map(i => `${i.title} × ${i.qty} ${i.unit} = ${i.price * i.qty} ₽`).join('\n'),
+          items_json: cartItems.map(i => ({
+            id: i.id, title: i.title, category: i.category, filling: i.filling,
+            addons: i.addons, unit: i.unit, price: i.price, qty: i.qty, sum: i.price * i.qty,
+          })),
           total,
           source: window.IS_TELEGRAM ? 'telegram_mini_app' : 'website',
           telegram_user: window.Telegram?.WebApp?.initDataUnsafe?.user || null,
