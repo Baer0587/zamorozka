@@ -4,7 +4,6 @@ package-lock.json
 
 # Claude Code internals
 .claude/
-.clude/
 
 # Playwright logs
 .playwright-mcp/

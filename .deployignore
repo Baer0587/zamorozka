@@ -5,5 +5,5 @@ serve.mjs
 package.json
 package-lock.json
 CLAUDE.md
-.clude/
+.claude/
 assets/tz.txt
