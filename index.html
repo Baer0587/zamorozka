@@ -183,59 +183,6 @@
     /* ── Hero ── */
     .hero-text-shadow { text-shadow: 0 1px 4px rgba(0,0,0,.7), 0 2px 20px rgba(0,0,0,.5); }
 
-    /* ── Product card ── */
-    .prod-card {
-      background: #FEFCF8;
-      border-radius: 16px;
-      overflow: hidden;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .prod-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 16px 48px rgba(200,94,50,.18), 0 4px 12px rgba(61,43,31,.10);
-    }
-    .prod-card img {
-      transition: transform 0.5s ease;
-    }
-    .prod-card:hover img { transform: scale(1.04); }
-
-    /* ── Cart button ── */
-    .btn-cart {
-      display: block; width: 100%;
-      border: 1.5px solid #C85E32;
-      color: #C85E32; background: transparent;
-      border-radius: 10px; padding: 10px 0;
-      font-family: 'Cabin', sans-serif;
-      font-size: 13px; font-weight: 600;
-      transition: background-color 0.2s ease, color 0.2s ease;
-      cursor: pointer;
-    }
-    .btn-cart:hover  { background: #C85E32; color: #FEFCF8; }
-    .btn-cart:active { transform: scale(0.97); }
-    .btn-cart:focus-visible { outline: 3px solid #C85E32; outline-offset: 3px; }
-
-    /* ── Catalog tabs ── */
-    .tab-btn { transition: background-color 0.2s ease, color 0.2s ease; cursor: pointer; }
-    .tab-btn.active { background: #C85E32 !important; color: #FEFCF8 !important; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: grid; }
-
-    /* ── Toast ── */
-    #toast {
-      position: fixed; bottom: 24px; left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: #3D2B1F; color: #F5EDD8;
-      padding: 12px 24px; border-radius: 12px;
-      font-family: 'Cabin', sans-serif;
-      font-size: 14px; font-weight: 500;
-      z-index: 100;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-      opacity: 0; white-space: nowrap;
-      box-shadow: 0 8px 24px rgba(61,43,31,.3);
-      pointer-events: none;
-    }
-    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-
     /* ── Format cards ── */
     .format-card { transition: transform 0.3s ease; }
     .format-card:hover { transform: translateY(-5px); }
@@ -259,10 +206,6 @@
       border-bottom: 1px solid #D4B896;
     }
     .del-row:last-child { border-bottom: none; padding-bottom: 0; }
-
-    /* ── Hide scrollbar ── */
-    .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
 
     /* ── Process step ── */
     .step-wrap { position: relative; }
@@ -660,285 +603,6 @@
         </p>
       </article>
     </div>
-  </div>
-</section>
-
-
-<!-- ════════════════════════════════════════════
-     БЛОК 3 — КАТАЛОГ
-════════════════════════════════════════════ -->
-<section id="menu" class="py-20 md:py-28" style="background-color:#FAF7F0;">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
-    <!-- Заголовок -->
-    <div class="text-center mb-12">
-      <p class="text-terra-500 text-sm font-semibold uppercase tracking-widest mb-3 reveal">Наша продукция</p>
-      <h2 class="font-display font-bold text-bark-600 mb-5 reveal delay-1"
-          style="font-size:clamp(2.4rem,5vw,3.6rem);">Меню</h2>
-      <div class="squiggle reveal delay-2"></div>
-    </div>
-
-    <!-- Табы категорий -->
-    <div class="-mx-4 px-4 sm:mx-0 sm:px-0 mb-10 reveal delay-1">
-      <div class="flex overflow-x-auto no-scrollbar gap-2 pb-0.5 sm:justify-center sm:flex-wrap sm:overflow-visible"
-           role="tablist" aria-label="Категории меню">
-        <button class="tab-btn active px-5 py-2.5 rounded-full text-sm font-semibold bg-terra-500 text-cream-50 shrink-0"
-                role="tab" aria-selected="true" aria-controls="tab-pelmeni" data-tab="pelmeni">Пельмени</button>
-        <button class="tab-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-cream-300 text-bark-500 hover:bg-cream-400 shrink-0"
-                role="tab" aria-selected="false" aria-controls="tab-vareniki" data-tab="vareniki">Вареники</button>
-        <button class="tab-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-cream-300 text-bark-500 hover:bg-cream-400 shrink-0"
-                role="tab" aria-selected="false" aria-controls="tab-blini" data-tab="blini">Блины</button>
-        <button class="tab-btn px-5 py-2.5 rounded-full text-sm font-semibold bg-cream-300 text-bark-500 hover:bg-cream-400 shrink-0"
-                role="tab" aria-selected="false" aria-controls="tab-syrniki" data-tab="syrniki">Сырники</button>
-      </div>
-    </div>
-
-    <!-- ── ПЕЛЬМЕНИ ── -->
-    <div id="tab-pelmeni" class="tab-panel active grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
-         role="tabpanel" aria-labelledby="">
-
-      <article class="prod-card shadow-warm reveal delay-1">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Пельмени+классические"
-               alt="Пельмени классические — говядина и свинина"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">Классические</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Говядина + свинина, лук, специи</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">350&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 650&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Пельмени классические" data-price="350">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-2">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Пельмени+куриные"
-               alt="Пельмени куриные с зеленью"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">Куриные</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Куриное филе, лук, зелень</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">300&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 560&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Пельмени куриные" data-price="300">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-3">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Пельмени+с+грибами"
-               alt="Пельмени с грибами и луком"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С грибами</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Грибы, лук, зелень</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">320&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 600&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Пельмени с грибами" data-price="320">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-4">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Три+мяса"
-               alt="Пельмени три мяса — говядина, свинина, курица"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <span class="inline-block bg-bark-400 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Новинка</span>
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">Три мяса</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Говядина, свинина, курица</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">380&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 700&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Пельмени три мяса" data-price="380">В корзину</button>
-        </div>
-      </article>
-    </div>
-
-    <!-- ── ВАРЕНИКИ ── -->
-    <div id="tab-vareniki" class="tab-panel grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-         role="tabpanel">
-
-      <article class="prod-card shadow-warm reveal delay-1">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Вареники+с+картофелем"
-               alt="Вареники с картофелем и луком"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">С картофелем</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Картофель, лук, укроп</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">280&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 520&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Вареники с картофелем" data-price="280">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-2">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Вареники+с+вишней"
-               alt="Вареники с вишней"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С вишней</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Вишня, сахар</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">300&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 560&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Вареники с вишней" data-price="300">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-3">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Вареники+с+творогом"
-               alt="Вареники с творогом"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С творогом</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, яйцо, ваниль</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">290&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">500&nbsp;г &nbsp;·&nbsp; 540&nbsp;₽/кг</span>
-          </div>
-          <button class="btn-cart" data-name="Вареники с творогом" data-price="290">В корзину</button>
-        </div>
-      </article>
-    </div>
-
-    <!-- ── БЛИНЫ ── -->
-    <div id="tab-blini" class="tab-panel grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-         role="tabpanel">
-
-      <article class="prod-card shadow-warm reveal delay-1">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Блины+с+мясом"
-               alt="Блины с мясной начинкой"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">С мясом</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Говядина, лук, специи</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">320&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">10&nbsp;шт &nbsp;·&nbsp; 600&nbsp;₽/20&nbsp;шт</span>
-          </div>
-          <button class="btn-cart" data-name="Блины с мясом" data-price="320">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-2">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Блины+с+творогом"
-               alt="Блины с творогом и изюмом"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С творогом и изюмом</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, изюм, ваниль</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">290&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">10&nbsp;шт &nbsp;·&nbsp; 540&nbsp;₽/20&nbsp;шт</span>
-          </div>
-          <button class="btn-cart" data-name="Блины с творогом" data-price="290">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-3">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Блины+со+сгущёнкой"
-               alt="Блины со сгущённым молоком"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">Со сгущёнкой</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Молоко, сгущёнка, масло</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">260&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">10&nbsp;шт &nbsp;·&nbsp; 500&nbsp;₽/20&nbsp;шт</span>
-          </div>
-          <button class="btn-cart" data-name="Блины со сгущёнкой" data-price="260">В корзину</button>
-        </div>
-      </article>
-    </div>
-
-    <!-- ── СЫРНИКИ ── -->
-    <div id="tab-syrniki" class="tab-panel grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-         role="tabpanel">
-
-      <article class="prod-card shadow-warm reveal delay-1">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Сырники+классические"
-               alt="Сырники классические"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <span class="inline-block bg-terra-500 text-cream-50 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Хит</span>
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1">Классические</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, яйцо, мука</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">200&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">10&nbsp;шт</span>
-          </div>
-          <button class="btn-cart" data-name="Сырники классические" data-price="200">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-2">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Сырники+с+яблоком"
-               alt="Сырники с яблоком и корицей"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С яблоком</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, яблоко, корица</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">220&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">10&nbsp;шт</span>
-          </div>
-          <button class="btn-cart" data-name="Сырники с яблоком" data-price="220">В корзину</button>
-        </div>
-      </article>
-
-      <article class="prod-card shadow-warm reveal delay-3">
-        <div class="overflow-hidden" style="aspect-ratio:4/3;">
-          <img src="https://placehold.co/400x300/EDE0C4/8B3D1E?text=Сырники+с+изюмом"
-               alt="Сырники с изюмом"
-               class="w-full h-full object-cover" loading="lazy">
-        </div>
-        <div class="p-5">
-          <h3 class="font-display text-xl font-bold text-bark-600 mb-1 mt-[22px]">С изюмом</h3>
-          <p class="text-bark-300 text-xs mb-3 leading-relaxed">Творог, изюм, ваниль</p>
-          <div class="flex items-baseline justify-between mb-4">
-            <span class="text-terra-500 font-bold text-lg">210&nbsp;₽</span>
-            <span class="text-bark-300 text-xs">10&nbsp;шт</span>
-          </div>
-          <button class="btn-cart" data-name="Сырники с изюмом" data-price="210">В корзину</button>
-        </div>
-      </article>
-    </div>
-
   </div>
 </section>
 
@@ -1783,9 +1447,6 @@
 </footer>
 
 
-<!-- Toast уведомление -->
-<div id="toast" role="status" aria-live="polite"></div>
-
 <!-- ════════════════════════════════════════════
      CART SIDEBAR
 ════════════════════════════════════════════ -->
@@ -1878,33 +1539,9 @@
 
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
-  /* ── Табы каталога ── */
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.tab;
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      btn.setAttribute('aria-selected', 'true');
-      const panel = document.getElementById('tab-' + target);
-      if (panel) {
-        panel.classList.add('active');
-        panel.querySelectorAll('.reveal').forEach(el => {
-          el.classList.remove('visible');
-          revealObserver.observe(el);
-        });
-      }
-    });
-  });
-
   /* ── Корзина ── */
   let cartItems = [];
   const cartBadge = document.getElementById('cart-badge');
-  const toast     = document.getElementById('toast');
-  let toastTimer;
 
   /* — Sidebar — */
   const sidebar = document.getElementById('cart-sidebar');
@@ -1941,13 +1578,6 @@
   }
 
   /* — Helpers — */
-  function showToast(msg) {
-    clearTimeout(toastTimer);
-    toast.textContent = msg;
-    toast.classList.add('show');
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2800);
-  }
-
   function formatPrice(p) {
     return p.toLocaleString('ru-RU') + ' ₽';
   }
@@ -2059,16 +1689,6 @@
       if (action.dataset.action === 'remove')   removeFromCart(name);
       return;
     }
-    /* — Add to cart — */
-    const btn = e.target.closest('.btn-cart');
-    if (!btn) return;
-    const name  = btn.dataset.name;
-    const price = Number(btn.dataset.price);
-    const existing = cartItems.find(i => i.name === name);
-    if (existing) { existing.qty++; } else { cartItems.push({ name, price, qty: 1 }); }
-    saveCart(); updateBadge(); renderCart();
-    showToast(`${name} добавлен в корзину`);
-    openCart();
   });
 
   renderCart();
