@@ -153,6 +153,10 @@
           <span id="cart-total" class="font-bold text-xl" style="color:#3D2B1F;"></span>
         </div>
 
+        <!-- Подсказка: сколько добрать до минимального заказа -->
+        <p id="min-order-hint" class="hidden px-6 pb-4 text-xs font-semibold leading-snug"
+           style="background:#FAF7F0; color:#A84D28;"></p>
+
       </div>
     </div>
 
@@ -309,6 +313,7 @@
 
 <script>
   const CART_KEY = 'zamorozka_cart';
+  const MIN_ORDER = 2500;   // минимальная сумма заказа, ₽ (на весь заказ, независимо от числа позиций)
 
   /* ── Читаем корзину (та же миграция, что в menu.html/index.html) ── */
   /* minQty позиции: поштучные Чебуреки не опускаются ниже 6, весовые — ниже 1. */
@@ -354,15 +359,19 @@
   }
 
   function renderCart() {
-    const list     = document.getElementById('cart-list');
-    const empty    = document.getElementById('cart-empty');
-    const totalRow = document.getElementById('cart-total-row');
-    const totalEl  = document.getElementById('cart-total');
+    const list      = document.getElementById('cart-list');
+    const empty     = document.getElementById('cart-empty');
+    const totalRow  = document.getElementById('cart-total-row');
+    const totalEl   = document.getElementById('cart-total');
+    const hint      = document.getElementById('min-order-hint');
+    const submitBtn = document.getElementById('submit-btn');
 
     if (!cartItems.length) {
       list.innerHTML = '';
       empty.classList.remove('hidden');
       totalRow.classList.add('hidden');
+      hint.classList.add('hidden');
+      submitBtn.disabled = true;          // пустую корзину оформить нельзя
       return;
     }
 
@@ -380,6 +389,16 @@
 
     const total = cartItems.reduce((s, i) => s + i.price * i.qty, 0);
     totalEl.textContent = formatPrice(total);
+
+    /* Минимум заказа: заранее показываем, сколько добрать, и блокируем кнопку */
+    if (total < MIN_ORDER) {
+      hint.textContent = `До минимального заказа не хватает ${formatPrice(MIN_ORDER - total)}`;
+      hint.classList.remove('hidden');
+      submitBtn.disabled = true;
+    } else {
+      hint.classList.add('hidden');
+      submitBtn.disabled = false;
+    }
   }
 
   renderCart();
@@ -424,6 +443,15 @@
     const submitBtn  = document.getElementById('submit-btn');
     const errorBox   = document.getElementById('submit-error');
     const errorText  = document.getElementById('submit-error-text');
+
+    /* Минимум заказа — оформление при сумме меньше нельзя (заодно отсекает пустую корзину) */
+    if (total < MIN_ORDER) {
+      errorText.textContent =
+        `Минимальный заказ — ${formatPrice(MIN_ORDER)}. Добавьте товаров ещё на ${formatPrice(MIN_ORDER - total)}.`;
+      errorBox.classList.remove('hidden');
+      errorBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
 
     /* Состояние загрузки */
     submitBtn.disabled = true;
