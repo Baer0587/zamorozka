@@ -1575,6 +1575,43 @@
   const CART_KEY = 'zamorozka_cart';
   function saveCart() {
     try { localStorage.setItem(CART_KEY, JSON.stringify(cartItems)); } catch {}
+    window.updateTelegramMainButton?.();   // держим Telegram MainButton в синхроне с корзиной
+  }
+
+  /* Нормализация позиции (копия из menu.html, общий ключ zamorozka_cart):
+     старый формат {name, price, qty} достраиваем до структурного
+     {id, title, category, filling, addons, unit, price, qty, minQty}. */
+  /* minQty позиции: поштучные Чебуреки не опускаются ниже 6, весовые — ниже 1. */
+  function itemMinQty(unit, category) {
+    return (unit === 'шт' && category === 'Чебуреки') ? 6 : 1;
+  }
+  function normalizeItem(it) {
+    if (it && it.id && it.unit) {                     // уже новый формат
+      if (it.minQty == null) it.minQty = itemMinQty(it.unit, it.category);  // позиции до поля minQty
+      return it;
+    }
+    const name = String((it && it.name) || '');
+    const m = name.match(/ · (кг|шт)$/);              // единицу старый формат писал в хвост name
+    const unit = m ? m[1] : 'кг';                     // по умолчанию — кг
+    const title = m ? name.slice(0, m.index) : name;  // title = name без хвоста единицы
+    const category = (it && it.category) || '';
+    return {
+      id: name || title,                              // старый ключ дедупликации стабилен
+      title,
+      category,
+      filling: (it && it.filling) || '',
+      addons: Array.isArray(it && it.addons) ? it.addons : [],
+      unit,
+      price: Number(it && it.price) || 0,
+      qty: Number(it && it.qty) || 0,
+      minQty: itemMinQty(unit, category),
+    };
+  }
+  function loadCart() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      return Array.isArray(raw) ? raw.map(normalizeItem) : [];
+    } catch { return []; }
   }
 
   /* — Helpers — */
@@ -1623,12 +1660,12 @@
     list.innerHTML = cartItems.map(item => `
       <div class="flex items-center gap-3 py-4" style="border-bottom:1px solid #F5EDD8;">
         <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm leading-tight" style="color:#3D2B1F;">${item.name}</div>
+          <div class="font-semibold text-sm leading-tight" style="color:#3D2B1F;">${item.title}</div>
           <div class="text-sm font-bold mt-0.5" style="color:#C85E32;">${formatPrice(item.price * item.qty)}</div>
-          <div class="text-xs mt-0.5" style="color:#BA9A82;">${formatPrice(item.price)} × ${item.qty}</div>
+          <div class="text-xs mt-0.5" style="color:#BA9A82;">${formatPrice(item.price)} × ${item.qty} ${item.unit}</div>
         </div>
         <div class="flex items-center gap-1 shrink-0">
-          <button data-action="decrease" data-name="${escAttr(item.name)}"
+          <button data-action="decrease" data-id="${escAttr(item.id)}"
                   aria-label="Меньше"
                   class="w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold
                          cursor-pointer transition-colors duration-200"
@@ -1636,7 +1673,7 @@
                   onmouseover="this.style.borderColor='#C85E32';this.style.color='#C85E32';"
                   onmouseout="this.style.borderColor='#EDE0C4';this.style.color='#9A7A62';">−</button>
           <span class="w-7 text-center font-bold text-sm" style="color:#3D2B1F;">${item.qty}</span>
-          <button data-action="increase" data-name="${escAttr(item.name)}"
+          <button data-action="increase" data-id="${escAttr(item.id)}"
                   aria-label="Больше"
                   class="w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold
                          cursor-pointer transition-colors duration-200"
@@ -1644,8 +1681,8 @@
                   onmouseover="this.style.borderColor='#C85E32';this.style.color='#C85E32';"
                   onmouseout="this.style.borderColor='#EDE0C4';this.style.color='#9A7A62';">+</button>
         </div>
-        <button data-action="remove" data-name="${escAttr(item.name)}"
-                aria-label="Удалить ${item.name}"
+        <button data-action="remove" data-id="${escAttr(item.id)}"
+                aria-label="Удалить ${item.title}"
                 class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer
                        transition-colors duration-200 shrink-0"
                 style="color:#D4B896;"
@@ -1666,31 +1703,31 @@
   }
 
   /* — Cart mutation actions — */
-  function removeFromCart(name) {
-    cartItems = cartItems.filter(i => i.name !== name);
+  function removeFromCart(id) {
+    cartItems = cartItems.filter(i => i.id !== id);
     saveCart(); updateBadge(); renderCart();
   }
 
-  function changeQty(name, delta) {
-    const item = cartItems.find(i => i.name === name);
+  function changeQty(id, delta) {
+    const item = cartItems.find(i => i.id === id);
     if (!item) return;
-    item.qty = Math.max(0, item.qty + delta);
-    if (item.qty === 0) cartItems = cartItems.filter(i => i.name !== name);
+    const min = item.minQty || 1;          // ниже минимума «−» не опускает; удаление — отдельной кнопкой
+    item.qty = Math.max(min, item.qty + delta);
     saveCart(); updateBadge(); renderCart();
   }
 
-  /* delegated handler for sidebar buttons */
+  /* delegated handler for sidebar buttons (позиции опознаём по data-id) */
   document.addEventListener('click', e => {
     const action = e.target.closest('[data-action]');
-    if (action) {
-      const name = action.dataset.name;
-      if (action.dataset.action === 'increase') changeQty(name, 1);
-      if (action.dataset.action === 'decrease') changeQty(name, -1);
-      if (action.dataset.action === 'remove')   removeFromCart(name);
-      return;
-    }
+    if (!action) return;
+    const id = action.dataset.id;
+    if (action.dataset.action === 'increase') changeQty(id, 1);
+    if (action.dataset.action === 'decrease') changeQty(id, -1);
+    if (action.dataset.action === 'remove')   removeFromCart(id);
   });
 
+  cartItems = loadCart();   // читаем общую корзину (zamorozka_cart) + миграция старого формата
+  updateBadge();
   renderCart();
 
   /* ── Карта доставки (Leaflet) ── */
@@ -1899,10 +1936,10 @@
     // Следим за корзиной и показываем/скрываем MainButton
     function updateMainButton() {
       const cart = JSON.parse(localStorage.getItem('zamorozka_cart') || '[]');
-      const totalItems = cart.reduce(function(sum, item) { return sum + (item.quantity || 1); }, 0);
+      const count = cart.length;   // число позиций (суммировать кг и шт бессмысленно)
 
-      if (totalItems > 0) {
-        tg.MainButton.setText('🛒 Оформить заказ (' + totalItems + ' шт.)');
+      if (count > 0) {
+        tg.MainButton.setText('🛒 Оформить заказ (' + count + ')');
         tg.MainButton.show();
       } else {
         tg.MainButton.hide();
@@ -1928,9 +1965,9 @@
   window.updateTelegramMainButton = function() {
     if (isTelegram) {
       const cart = JSON.parse(localStorage.getItem('zamorozka_cart') || '[]');
-      const totalItems = cart.reduce(function(sum, item) { return sum + (item.quantity || 1); }, 0);
-      if (totalItems > 0) {
-        tg.MainButton.setText('🛒 Оформить заказ (' + totalItems + ' шт.)');
+      const count = cart.length;   // число позиций (суммировать кг и шт бессмысленно)
+      if (count > 0) {
+        tg.MainButton.setText('🛒 Оформить заказ (' + count + ')');
         tg.MainButton.show();
       } else {
         tg.MainButton.hide();
