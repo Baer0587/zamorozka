@@ -861,23 +861,32 @@
 
   /* — localStorage — */
   /* Нормализация позиции: старый формат {name, price, qty} дополняем до
-     структурного {id, title, category, filling, addons, unit, price, qty}.
+     структурного {id, title, category, filling, addons, unit, price, qty, minQty}.
      Нужно, чтобы у клиента с уже лежащей корзиной не поехали кнопки/единицы. */
+  /* minQty позиции: поштучные Чебуреки не опускаются ниже 6, весовые — ниже 1. */
+  function itemMinQty(unit, category) {
+    return (unit === 'шт' && category === 'Чебуреки') ? 6 : 1;
+  }
   function normalizeItem(it) {
-    if (it && it.id && it.unit) return it;            // уже новый формат
+    if (it && it.id && it.unit) {                     // уже новый формат
+      if (it.minQty == null) it.minQty = itemMinQty(it.unit, it.category);  // позиции до поля minQty
+      return it;
+    }
     const name = String((it && it.name) || '');
     const m = name.match(/ · (кг|шт)$/);              // единицу старый формат писал в хвост name
     const unit = m ? m[1] : 'кг';                     // по умолчанию — кг
     const title = m ? name.slice(0, m.index) : name;  // title = name без хвоста единицы
+    const category = (it && it.category) || '';
     return {
       id: name || title,                              // старый ключ дедупликации стабилен
       title,
-      category: (it && it.category) || '',
+      category,
       filling: (it && it.filling) || '',
       addons: Array.isArray(it && it.addons) ? it.addons : [],
       unit,
       price: Number(it && it.price) || 0,
       qty: Number(it && it.qty) || 0,
+      minQty: itemMinQty(unit, category),
     };
   }
   function loadCart() {
@@ -1030,8 +1039,8 @@
   function changeQty(id, delta) {
     const item = cartItems.find(i => i.id === id);
     if (!item) return;
-    item.qty = Math.max(0, item.qty + delta);
-    if (item.qty === 0) cartItems = cartItems.filter(i => i.id !== id);
+    const min = item.minQty || 1;          // ниже минимума «−» не опускает; удаление — отдельной кнопкой
+    item.qty = Math.max(min, item.qty + delta);
     saveCart(); updateBadge(); renderCart();
   }
 
@@ -1143,9 +1152,10 @@
   }
 
   /* Структурная позиция корзины:
-     { id, title, category, filling, addons[], unit, price, qty }.
+     { id, title, category, filling, addons[], unit, price, qty, minQty }.
      id — стабильный ключ дедупликации/кнопок: «категория|начинка|сорт.добавки».
-     title — человекочитаемое имя БЕЗ единицы (единицу в сайдбаре даёт item.unit). */
+     title — человекочитаемое имя БЕЗ единицы (единицу в сайдбаре даёт item.unit).
+     minQty — нижняя граница количества (Чебуреки = 6, весовые = 1). */
   function composeItem(cat, fillingIdx, addonSet, price, qty) {
     const filling = cat.fillings[fillingIdx].name;
     const addonNames = [...addonSet].sort((a, b) => a - b).map(i => addons[i].name);
@@ -1160,6 +1170,7 @@
       unit: cat.unit,
       price,
       qty,
+      minQty: cat.minQty || 1,
     };
   }
 
