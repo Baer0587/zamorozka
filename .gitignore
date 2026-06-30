@@ -18,3 +18,6 @@ serve.mjs
 
 # Private docs
 assets/tz.txt
+
+# Файлы, скачанные с сервера для изучения — обратно НЕ коммитить/выкладывать
+server-review/

@@ -1,9 +1,31 @@
+# .deployignore — что НЕ уходит на прод (plemennaya-spb.ru).
+# Применять ТОЛЬКО через rsync --exclude-from=.deployignore
+# (внимание: scp этот файл НЕ читает — для scp список бесполезен).
+# Всё, чего здесь нет, попадёт в вебрут. Менять осторожно.
+
+# — Зависимости и dev-артефакты —
 node_modules/
 temporary_screenshots/
+.playwright-mcp/
 screenshot.mjs
 serve.mjs
 package.json
 package-lock.json
+
+# — Внутренние документы (STATUS.md содержит пароль админки — НЕ выкладывать!) —
+STATUS.md
 CLAUDE.md
+README.md
 .claude/
+.deployignore
+
+# — Git: история и конфиг, в вебруте недопустимы —
+.git/
+.gitignore
+
+# — Внутренние материалы / скриншоты (сайту не нужны) —
+admin-*.png
 assets/tz.txt
+
+# — Файлы, скачанные с сервера для изучения — обратно НЕ выкладывать! —
+server-review/
