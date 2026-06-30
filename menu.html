@@ -860,9 +860,31 @@
   const CART_KEY = 'zamorozka_cart';
 
   /* — localStorage — */
+  /* Нормализация позиции: старый формат {name, price, qty} дополняем до
+     структурного {id, title, category, filling, addons, unit, price, qty}.
+     Нужно, чтобы у клиента с уже лежащей корзиной не поехали кнопки/единицы. */
+  function normalizeItem(it) {
+    if (it && it.id && it.unit) return it;            // уже новый формат
+    const name = String((it && it.name) || '');
+    const m = name.match(/ · (кг|шт)$/);              // единицу старый формат писал в хвост name
+    const unit = m ? m[1] : 'кг';                     // по умолчанию — кг
+    const title = m ? name.slice(0, m.index) : name;  // title = name без хвоста единицы
+    return {
+      id: name || title,                              // старый ключ дедупликации стабилен
+      title,
+      category: (it && it.category) || '',
+      filling: (it && it.filling) || '',
+      addons: Array.isArray(it && it.addons) ? it.addons : [],
+      unit,
+      price: Number(it && it.price) || 0,
+      qty: Number(it && it.qty) || 0,
+    };
+  }
   function loadCart() {
-    try { return JSON.parse(localStorage.getItem(CART_KEY) || '[]'); }
-    catch { return []; }
+    try {
+      const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+      return Array.isArray(raw) ? raw.map(normalizeItem) : [];
+    } catch { return []; }
   }
   function saveCart() {
     try { localStorage.setItem(CART_KEY, JSON.stringify(cartItems)); } catch {}
@@ -957,12 +979,12 @@
     list.innerHTML = cartItems.map(item => `
       <div class="flex items-center gap-3 py-4" style="border-bottom:1px solid #F5EDD8;">
         <div class="flex-1 min-w-0">
-          <div class="font-semibold text-sm leading-tight" style="color:#3D2B1F;">${item.name}</div>
+          <div class="font-semibold text-sm leading-tight" style="color:#3D2B1F;">${item.title}</div>
           <div class="text-sm font-bold mt-0.5" style="color:#C85E32;">${formatPrice(item.price * item.qty)}</div>
-          <div class="text-xs mt-0.5" style="color:#BA9A82;">${formatPrice(item.price)} × ${item.qty}</div>
+          <div class="text-xs mt-0.5" style="color:#BA9A82;">${formatPrice(item.price)} × ${item.qty} ${item.unit}</div>
         </div>
         <div class="flex items-center gap-1 shrink-0">
-          <button data-action="decrease" data-name="${escAttr(item.name)}"
+          <button data-action="decrease" data-id="${escAttr(item.id)}"
                   aria-label="Меньше"
                   class="w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold
                          cursor-pointer transition-colors duration-200"
@@ -970,7 +992,7 @@
                   onmouseover="this.style.borderColor='#C85E32';this.style.color='#C85E32';"
                   onmouseout="this.style.borderColor='#EDE0C4';this.style.color='#9A7A62';">−</button>
           <span class="w-7 text-center font-bold text-sm" style="color:#3D2B1F;">${item.qty}</span>
-          <button data-action="increase" data-name="${escAttr(item.name)}"
+          <button data-action="increase" data-id="${escAttr(item.id)}"
                   aria-label="Больше"
                   class="w-8 h-8 rounded-lg flex items-center justify-center text-base font-bold
                          cursor-pointer transition-colors duration-200"
@@ -978,8 +1000,8 @@
                   onmouseover="this.style.borderColor='#C85E32';this.style.color='#C85E32';"
                   onmouseout="this.style.borderColor='#EDE0C4';this.style.color='#9A7A62';">+</button>
         </div>
-        <button data-action="remove" data-name="${escAttr(item.name)}"
-                aria-label="Удалить ${item.name}"
+        <button data-action="remove" data-id="${escAttr(item.id)}"
+                aria-label="Удалить ${item.title}"
                 class="w-8 h-8 rounded-lg flex items-center justify-center cursor-pointer
                        transition-colors duration-200 shrink-0"
                 style="color:#D4B896;"
@@ -1000,46 +1022,34 @@
   }
 
   /* — Cart mutation actions — */
-  function removeFromCart(name) {
-    cartItems = cartItems.filter(i => i.name !== name);
+  function removeFromCart(id) {
+    cartItems = cartItems.filter(i => i.id !== id);
     saveCart(); updateBadge(); renderCart();
   }
 
-  function changeQty(name, delta) {
-    const item = cartItems.find(i => i.name === name);
+  function changeQty(id, delta) {
+    const item = cartItems.find(i => i.id === id);
     if (!item) return;
     item.qty = Math.max(0, item.qty + delta);
-    if (item.qty === 0) cartItems = cartItems.filter(i => i.name !== name);
+    if (item.qty === 0) cartItems = cartItems.filter(i => i.id !== id);
     saveCart(); updateBadge(); renderCart();
   }
 
-  /* delegated handler for sidebar buttons */
+  /* delegated handler for sidebar buttons (позиции опознаём по data-id) */
   document.addEventListener('click', e => {
     const action = e.target.closest('[data-action]');
-    if (action) {
-      const name = action.dataset.name;
-      if (action.dataset.action === 'increase') changeQty(name, 1);
-      if (action.dataset.action === 'decrease') changeQty(name, -1);
-      if (action.dataset.action === 'remove')   removeFromCart(name);
-      return;
-    }
-    /* — Add to cart — */
-    const btn = e.target.closest('.btn-cart');
-    if (!btn) return;
-    const name  = btn.dataset.name;
-    const price = Number(btn.dataset.price);
-    const existing = cartItems.find(i => i.name === name);
-    if (existing) { existing.qty++; } else { cartItems.push({ name, price, qty: 1 }); }
-    saveCart(); updateBadge(); renderCart();
-    showToast(`${name} добавлен в корзину`);
-    openCart();
+    if (!action) return;
+    const id = action.dataset.id;
+    if (action.dataset.action === 'increase') changeQty(id, 1);
+    if (action.dataset.action === 'decrease') changeQty(id, -1);
+    if (action.dataset.action === 'remove')   removeFromCart(id);
   });
 
   /* ════════════════════════════════════════════
      КАРТОЧКА-КОНФИГУРАТОР КАТЕГОРИИ (новая модель)
      Рендерится из объекта категории + addons (разметка не хардкодится).
-     В корзину кладёт позицию в ТЕКУЩЕМ совместимом формате {name, price, qty},
-     поэтому логика корзины (renderCart/changeQty/localStorage) НЕ меняется.
+     В корзину кладёт структурную позицию { id, title, category, filling,
+     addons, unit, price, qty } — дедупликация и кнопки сайдбара по id.
   ════════════════════════════════════════════ */
   function renderCategoryCard(cat) {
     const chips = cat.fillings.map((f, i) => `
@@ -1132,24 +1142,32 @@
       </div>`;
   }
 
-  /* Имя позиции для корзины: «Пельмени «Свинина-говядина» + Зелень, Масло · кг».
-     Единицу (кг/шт) добавляем в конец имени — чтобы в сайдбаре читалось «… × N кг/шт»
-     (renderCart показывает только «цена × qty», его логику не трогаем). */
-  function composeItemName(cat, fillingIdx, addonSet) {
-    let name = `${cat.category} «${cat.fillings[fillingIdx].name}»`;
-    if (addonSet.size) {
-      const list = [...addonSet].sort((a, b) => a - b).map(i => addons[i].name).join(', ');
-      name += ` + ${list}`;
-    }
-    name += ` · ${cat.unit}`;
-    return name;
+  /* Структурная позиция корзины:
+     { id, title, category, filling, addons[], unit, price, qty }.
+     id — стабильный ключ дедупликации/кнопок: «категория|начинка|сорт.добавки».
+     title — человекочитаемое имя БЕЗ единицы (единицу в сайдбаре даёт item.unit). */
+  function composeItem(cat, fillingIdx, addonSet, price, qty) {
+    const filling = cat.fillings[fillingIdx].name;
+    const addonNames = [...addonSet].sort((a, b) => a - b).map(i => addons[i].name);
+    let title = `${cat.category} «${filling}»`;
+    if (addonNames.length) title += ` + ${addonNames.join(', ')}`;
+    return {
+      id: `${cat.category}|${filling}|${addonNames.join(',')}`,
+      title,
+      category: cat.category,
+      filling,
+      addons: addonNames,
+      unit: cat.unit,
+      price,
+      qty,
+    };
   }
 
-  /* Кладём настроенную позицию, не меняя формат корзины: {name, price, qty} */
-  function addConfiguredToCart(name, price, qty) {
-    const existing = cartItems.find(i => i.name === name);
-    if (existing) existing.qty += qty;
-    else cartItems.push({ name, price, qty });
+  /* Кладём структурную позицию; дедупликация — по item.id */
+  function addConfiguredToCart(item) {
+    const existing = cartItems.find(i => i.id === item.id);
+    if (existing) existing.qty += item.qty;
+    else cartItems.push(item);
     saveCart(); updateBadge(); renderCart();
     showToast('Добавлено в корзину');
     openCart();
@@ -1204,7 +1222,7 @@
     });
 
     mount.querySelector('[data-add]').addEventListener('click', () => {
-      addConfiguredToCart(composeItemName(cat, selFilling, selAddons), unitPrice(), qty);
+      addConfiguredToCart(composeItem(cat, selFilling, selAddons, unitPrice(), qty));
     });
 
     refresh();
